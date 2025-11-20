@@ -4,7 +4,29 @@ import sys  # For exiting the game
 
 
 # this is how you create a new object. You inherit from class Object and override the 'use' function. 
-class AncientTome(Object):
+class Barry(Object):
+
+    bee_ascii = """\n
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠠⢄⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠉⠢⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢄⠀⠀⠀⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠠⡀⣀⣤⣦⣷⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⣰⣷⣿⣿⠟⣫⠕⠒⢚⠹⣶⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢐⣿⠟⠓⠂⠀⠀⠠⢨⣤⠉⠂⢳⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⡤⢶⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠸⡏⡄⢢⣖⠠⠀⠀⠈⠉⠀⠀⠘⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣤⣤⣤⣤⡾⠗⢻⡷⠈⠻⡄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢏⠀⠈⠋⠀⠀⠄⢀⠀⠉⠀⠀⢱⠀⠀⠐⠖⣖⠒⠋⠉⠁⣀⣀⣤⣾⠿⠋⠁⠀⠀⢸⣧⠀⠀⠃⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⢦⡀⠐⠒⠒⠈⠀⠀⢀⣠⢆⡞⠀⠀⠀⣼⣏⠃⠀⠀⠀⣿⣿⣿⣿⡆⠀⡀⠀⠀⣾⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠈⠳⢤⣶⡶⣿⣿⣿⢟⡥⡊⠀⠀⠀⣼⣟⠂⠀⠀⠀⣸⣿⣿⣿⣿⠀⠀⣿⣆⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠧⠀⠙⠻⣿⣈⠀⠀⢀⣾⢟⠎⠀⠀⠀⢠⣿⣿⣿⣿⡟⠀⢀⣿⣿⡆⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠀⠀⠁⠜⠻⣾⣴⣿⣯⡂⠀⢀⠀⢀⣾⣿⣿⣿⡿⠁⠀⣼⣿⣿⢡⣻⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠀⠀⠈⠀⠘⠈⠛⠷⣷⣿⣷⣶⣌⣾⣿⣿⣿⣿⠃⠀⣼⣿⣿⠃⢸⠃⠻⣿⣧⠀⠀⠀⠀⣀⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡌⡤⠁⠀⠀⠀⠀⠀⠀⠀⠉⢻⣿⣾⣿⣿⣿⡿⠿⠿⣶⣿⣿⣯⣀⣟⣠⣴⣷⣾⣿⡿⠛⠛⠻⣟⣷⠒⠄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⡿⠋⠀⣰⣿⣿⡿⠃⣸⠟⠉⠁⠀⠀⠟⠛⠛⠚⠫⠀⠠⠙⠠⠇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠤⠾⠿⠿⠋⠐⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+"""
 
     def __init__(self, name, description, can_be_gotten, state, visible):
         # Call the superclass constructor
@@ -12,13 +34,7 @@ class AncientTome(Object):
 
     def use(self):
         # the lamp toggles when you 'use' it. 
-        if self.state == "off":
-            self.state = "on"
-            print(f"The lamp is now on.")
-        else:
-            self.state = "off"
-            print(f"The lamp is now is now off.")
-            ("Ancient Tome", "A tattered old tome that is covered in dust. Maybe there is great wisdom inside.", True, "off", True)
+        print("You can't use Barry")
 
 
 class Room:
@@ -27,19 +43,19 @@ class Room:
 
     def __init__(self):
         self.room_num = 20
+         # other room setup - add the lamp and set up the exits.
+        barry = Barry("Barry the Bee", "A very large bee with a big attitude that is bent on killing you", False, "alive", True)
+        self.objects.append(barry)
+
         self.description = (
-            "You awaken, wondering how you got here. Some evil spell has been cast upon you!\n"
-            "You are sitting inside a dark room with stone floors, walls, and a low ceiling.\n"
-            "There are no doors and no windows. Water drips noisily from the ceiling.\n"
-            "A circular 'well' sits in the center of the room, the surface of the water\n"
-            "glows with an unearthly light.\n"
+            "You are in large round room, surrounded by vine covered cobblestone wall.\n"
+            "In front of you, buzzing in the air, is Barry the Bee.\n"
+            f"{barry.bee_ascii}\n"
+            "He looks angry, and launches at you. He has dealt you 10 damage.\n"
         )
-        # other room setup - add the lamp and set up the exits.
-        tome = AncientTome("Lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
-        self.objects.append(tome)
-        
+       
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
-        self.exits = ["down", "right"]
+        self.exits = ["south", "east"]
 
 
 
@@ -72,6 +88,7 @@ class Room:
                 self.look(other_part, player)
 
             elif command_base in ["get", "take"]:
+                print("You cannot take Barry the Bee. He takes you.")
                 self.get(other_part, player)
 
             elif command_base in ["drop", "put"]:
@@ -104,12 +121,12 @@ class Room:
                 print(f"There is a {obj.name} here.")
 
     def move(self, direction):
-        if direction in ["down", "d", "well", "south"]:
+        if direction in ["south", "s", "OTHER"]:
             print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
-            return "down"
-        if direction in ["right", "r", "well", "east"]:
+            return "south"
+        if direction in ["east", "e", "OTHER"]:
             print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
-            return "right"
+            return "east"
         else:
             print("You can't go that way.")
             return None
@@ -119,8 +136,8 @@ class Room:
             self.describe_room()
             return
 
-        if target == "well":
-            print("Upon closer inspection, the liquid is not water -- it's pure magic. It seems the well may be a portal to somewhere.")
+        if target == "barry":
+            print("He's literally Barry the Bee. He taunts you with Jerry Seinfeld's voice and says he's going to take your wife.")
             return
         
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
