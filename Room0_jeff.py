@@ -35,7 +35,7 @@ class Room:
             "glows with an unearthly light.\n"
         )
         # other room setup - add the lamp and set up the exits.
-        lamp = Lamp("Lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", False)
+        lamp = Lamp("Lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
         self.objects.append(lamp)
         
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
@@ -101,8 +101,9 @@ class Room:
         print(self.description)
         if self.objects:
             for obj in self.objects:
-                obj.print_description()
-
+                if obj.visible:
+                    print("There is a " + obj.name)
+    
     def move(self, direction):
         if direction in ["down", "d", "well"]:
             print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
