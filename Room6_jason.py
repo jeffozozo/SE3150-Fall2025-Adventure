@@ -1,86 +1,65 @@
 from object import Object
 from player import Player
 import sys  # For exiting the game
-import time
 
 
-# this is how you create a new object. You inherit from class Object and override the 'use' function. 
-class Lamp(Object):
-
-    def __init__(self, name, description, can_be_gotten, state, visible):
-        # Call the superclass constructor
-        super().__init__(name, description, can_be_gotten, state, visible)
-
-    def use(self):
-        # the lamp toggles when you 'use' it. 
-        if self.state == "off":
-            self.state = "on"
-            print(f"The lamp is now on.")
-        else:
-            self.state = "off"
-            print(f"The lamp is now is now off.")
-
-
-class Farmer(Object):
-    def __init__(self, name, description, can_be_gotten, state, visible, player : "Player", countdown, alarmed = True):
-        self.alarmed = alarmed 
-        self.countdown = countdown  
-        self.current_countdown = countdown 
-        self.countdown_has_started = False
+class Potion(Object):
+    def __init__(self, name, description, can_be_gotten, state, visible, player : "Player | None"):
         self.player_handle = player
+        self.health_increase = 15
         super().__init__(name, description, can_be_gotten, state, visible)
-    def start_countdown(self):
-        if self.countdown_has_started:
-            return
-        self.countdown_has_started = True
-        while self.countdown_has_started:
-            for i in range(self.current_countdown, 0, -1):
-                print(i)
-                time.sleep(1)
-            
-            print("BANG!")
-            self.player_handle.health = 0
     def use(self):
-        if self.alarmed:
-            print("""
-                  Now don't come any closer ya hear?
-                  I'm gonna give ya to the count of 5 to explain yaself.
-                  """)
-            self.start_countdown()
-        else:
-            print("")
+        print("You drink the potion, it has a sweet flavor to it and leaves you feeling rejuvenated")
+        print(f"You gained {self.health_increase} health")
+        if self.player_handle:
+            self.player_handle.health += self.health_increase
+class Chest(Object):
+    def __init__(self, name, description, can_be_gotten, state, visible):
+        super().__init__(name, description, can_be_gotten, state, visible)
+        self.sealed = True
+        self.riddling_begun = False
+    def use(self):
+        print("The chest awaits your answers to its riddles, type \"begin\" to start and \"stop\" to stop\n once you stop however, the chest may be sealed forever")
 
 
 class Room:
-
     objects = []
 
     def __init__(self):
         self.room_num = 0
+        self.questions_answered = 0
+        self.location = "room"
         self.has_entered_previously = False
-        self.is_in_hole = False
-        self.time_to_react = 5
-        self.location = "desert"
-        self.farmer = None
-        self.description = (
-            """
-            Suddenly, you're in a desert, blinded by the hot afternoon sun
-            You come to your senses, and notice there's a man holding a strange contraption right in front of you.
-            He speaks, 
-            "Where in the hell didja come from!?"
-            He seems very alarmed, and jerks the contraption to face you.
-            "Nowh don't move a finga, you's gonna explain where ya came from."
-            He moves his finger onto a section of the contraption.
-            You instinctively flick your arms up.
-            "Noh funny tricks from ya, or the vulchahs are gonna have themselfes a snack"
-
-            You need to find a way out of this situation.
-
-            There is a reality-breaking door behind you, which seems to link back to the dungeon you came from.
+        self.has_riddled_previously = False
+        self.riddling_attempts = 5
+        self.questions_answered = 0        
+        self.chest = Chest("Chest", "A small wooden chest, it's locked", False, "locked", True)
+        self.reward: "Potion" = Potion(
+                    "Potion",
+                    "A potion with a red liquid in it",
+                    False,
+                    "",
+                    False,
+                    None
+                )
             
-            There also seems to be a loose patch of dirt in front of you, potentially covering a hole beneath.
-            """
+        self.objects.append(self.chest)
+        self.answers = [
+            ["dragon", "a dragon", "wyrm", "a wyrm"], 
+            ["a golem", "golem"], 
+            ["a portal", "portal", "a gate", "gate", "dimension door"]
+        ]
+        self.questions = [
+            "I guard my treasure day and night,\nScales like armor, breath of blight.\nBrave the fire if you dare\nWhat creature waits within its lair?", 
+            "Born from stone, yet I walk as men.\nStrike me down, I rise again.\nSilent sentinel, carved with grace\nWhat stands watch in an ancient place?", 
+            "I vanish in sunlight, appear in the gloam,\nA pathway to danger or to a new home.\nStep through my shimmer, your fate may unfold\nWhat am I, woven of magic untold?"
+        ]
+        self.description = (
+            "You find yourself in a well-illuminated room with a small wooden chest in the center\n"
+            "A note on the chest reads \"Answer me these questions three, and rewards I will bestow upon ye\"\n"
+            "There is a corridor to your east, a flight of stairs leading up, and a flight of stairs leading down"
         )
+
 
 
         # other room setup - add the lamp and set up the exits.
@@ -93,20 +72,16 @@ class Room:
     def enter(self, player):
 
         # step 1 - Print the room description
-        self.describe_room()
-        self.farmer = Farmer("Farmer", "A scared farmer with a very intimidating device", False, "Cautious", True, player, self.time_to_react)
-        if self.has_entered_previously:
-            self.time_to_react = 3
+        if self.has_entered_previously == True:
             self.description = (
-                """
-                The man snaps back to face you, remembering his previous encounter
-                "There you are snake, stand still an' git it between the eyes"
-                You have mere moments to react.
-                """
+                "The light that filled this room has been snuffed out, and the chest is gone"
             )
-            self.farmer.state = "Alarmed"
-            self.farmer.start_countdown()
-        self.objects.append(self.farmer)
+            self.objects = []
+        self.describe_room()
+        self.reward.player_handle = player
+        if self.objects:
+            self.objects[0].player_handle = player
+        
 
         # step 2 - make your own command loop - watch carefully about how to parse commands:
         while True:
@@ -146,75 +121,53 @@ class Room:
             elif command_base == "quit":
                 if(self.quit_game(player) == "quit"):
                     return "quit"
+            elif command_base == "begin" and self.chest:
+                if self.has_riddled_previously:
+                    print("The chest is not accepting new answers")
+                else:
+                    self.chest.riddling_begun = True
+                    print(self.questions[0])
                 
-
             elif command_base in ["help", "?"]:
                 self.show_help()
             
             elif command_base == "hint":
                 self.show_hint()
+            elif self.chest and self.chest.riddling_begun:
+                self.do_riddling((command_base + " " + other_part).strip(), player)
             else:
                 self.unknown_command()
-            
-            if not player.is_alive():
-                break #may be a redundant check but idk how the engine interacts with the player dying
 
     # Helper functions
     def describe_room(self):
         print(self.description)
-        if self.location == "desert":
-            self.description = (
-                """
-                You're in a desert, with an alarmed farmer in front of you, a dimension door behind you, and loose dirt in front of you
-                """
-            ) #This may break stuff, but it's supposed to change the description after entering the room
-        else:
-            self.description = (
-                """
-                You're in a dark dusty hole, with a portal above you and a deep hole below you
-                """
-            )
         if self.objects:
             for obj in self.objects:
                 print(f"There is a {obj.name} here.")
 
     def move(self, direction):
-        if direction in ["down", "d"]: #add any other commands that might go down
-            if self.location == "desert":
-                print("You break through the dirt, and find yourself in a dark, dusty hole")
-                self.location = "hole"
-                if self.farmer:
-                    self.farmer.countdown_has_started = False
-                return None
-            print("You go deeper into the hole as it beckons you forward")
+        if direction in ["down", "d"]: #add any oYou're in a darkther commands that might go down
+            print("You descend down the stairs")
             self.has_entered_previously = True
-            if self.farmer:
-                self.farmer.countdown_has_started = False
+            self.chest = None
             return "down"
-        elif direction in ["up", "u"] and self.location == "hole":
-            print("you go up into the strange portal and are transported elsewhere")
+        elif direction in ["up", "u"]:
+            print("You ascend up the stairs")
             self.has_entered_previously = True
-            if self.farmer:
-                self.farmer.countdown_has_started = False
+            self.chest = None
             return "up"
         elif direction in ["east", "e"]:
-            print("you go back to whence you came")
+            print("you go back through the corridor")
             self.has_entered_previously = True
-            if self.farmer:
-                self.farmer.countdown_has_started = False
+            self.chest = None
             return "east"
         else:
             print("You can't go that way.")
             return None
 
     def look(self, target, player):
-        if(target == None or target == "" ):
+        if(target == None or target == ""):
             self.describe_room()
-            return
-
-        if target == "farmer" and self.farmer:
-            print("The farmer doesn't react very kindly to being inspected")
-            self.farmer.start_countdown()
             return
         
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
@@ -295,7 +248,7 @@ class Room:
         print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help")
 
     def show_hint(self):
-        print("This is the starting room. You probably ought to get the lamp and go down the well.")
+        print("Answer the chest's riddles, but answer carefully for you have limited attempts")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")
@@ -311,4 +264,57 @@ class Room:
             if item.name.lower() == item_name.lower():
                 return item
         return None
+    
+    def give_minor_reward(self, player):
+        if self.chest:
+            self.chest.riddling_begun = False
+        print("However, as you turn away in defeat, it shifts open and within there lies a strange potion")
+        player.inventory.append(self.reward)
+        player.score += 20
+        print("Congratulations, you received a healing potion")
+        self.has_riddled_previously = True
+
+    def give_major_reward(self, player):
+        hp_added = 50
+        if self.chest:
+            self.chest.riddling_begun = False
+        print("The chest opens to reveal a holy orb within it, as you grasp it you find yourself feeling stronger")
+        print(f"You gained {hp_added} health")
+        player.health += hp_added
+        player.score += 50
+
+    def do_riddling(self, cmd, player):
+        if cmd == "stop":
+            if self.chest:
+                self.chest.riddling_begun = False
+            print("You shout into the room, and the note on the chest disappears")
+            if self.questions_answered == 3:
+                self.give_major_reward(player)
+            elif self.questions_answered == 2:
+                self.give_minor_reward(player)
+            else:
+                print("The chest locks tight, it seems your chance to get the valuables locked within is gone")
+            self.has_riddled_previously = True
+            return 
+        if cmd in self.answers[self.questions_answered]:
+            self.questions_answered += 1
+            if self.questions_answered > len(self.answers) - 1 and self.chest:
+                self.give_major_reward(player)
+                self.has_riddled_previously = True
+                return
+            print("The chest glows in response, it seems your answer was correct")
+            print(self.questions[self.questions_answered])
+        else:
+            self.riddling_attempts -= 1
+            if self.riddling_attempts <= 0:
+                print("The chest locks tight, it seems to be disappointed in you")
+                if self.questions_answered == 2:
+                    self.give_minor_reward(player)
+                self.has_riddled_previously = True
+                return
+            print("The chest does not react, perhaps answer more astutely next time")
+            print(f"You have {self.riddling_attempts} attempts left")
+
+
+
     
