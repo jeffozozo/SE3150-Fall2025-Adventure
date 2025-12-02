@@ -38,7 +38,7 @@ Room:8 - Yasli Kanimba
  west,9
  east,15
 
-Room:9 - Garret Kilgore
+Room:9 - Garrett Kilgore
  east,10
  south,1
 
