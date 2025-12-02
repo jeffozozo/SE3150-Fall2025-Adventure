@@ -1,7 +1,7 @@
 from object import Object
 from player import Player
 import sys  # For exiting the game
-import minigame  # Import the guitar hero minigame
+import mikesminigame
 
 
 # Electric Guitar object - when used, allows player to transcend to the upper room
@@ -343,7 +343,7 @@ class Room:
                 print("="*50 + "\n")
                 
                 # Call the guitar hero minigame
-                result = minigame.main()
+                result = mikesminigame.main()
                 
                 # Check if player transcended in the minigame
                 if result == "transcend":
