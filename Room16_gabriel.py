@@ -51,10 +51,10 @@ class Door(Object):
 
 
 class Room:
-    objects = []
 
     def __init__(self):
         self.room_num = 16
+        self.objects = []  # Instance variable, not class variable
         self.description = (
             "You enter an elegant Victorian study with dark mahogany walls and plush carpeting.\n"
             "A massive grandfather clock stands against the north wall, its pendulum swinging rhythmically.\n"
