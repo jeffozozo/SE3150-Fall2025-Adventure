@@ -1,13 +1,15 @@
 from object import Object
 from player import Player
 import sys  # For exiting the game
+import time
+import select
 
-#  west,2 - saul
-#  down,4 - josh
+#  west,2 -  through a mousedooor (saul's object) azul_oro a a needle to fight a cockroach to go back 
+#  down,4 - josh: going down the vine and it snaps set a condition 
 #  south,21 - ayden
 
 # this is how you create a new object. You inherit from class Object and override the 'use' function. 
-class Lamp(Object):
+class Mirror(Object):
 
     def __init__(self, name, description, can_be_gotten, state, visible):
         # Call the superclass constructor
@@ -17,7 +19,45 @@ class Lamp(Object):
         # the lamp toggles when you 'use' it. 
         if self.state == "off":
             self.state = "on"
-            print(f"The lamp is now on.")
+            print(f'''                                                                                                                                                                      
+                                                                                                                                                                                                    
+                    ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                    
+                   ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ███████    ███    ████    ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ███████    ███    ████    ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███     
+                   ███                                 /$$   /$$             /$$           /$$$$$$$$                                  /$$                               ███   ███
+                   ███                                 | $$$ | $$            | $$          | $$_____/                                 | $$                              ███   ███
+                   ███                                 | $$$$| $$  /$$$$$$  /$$$$$$        | $$     /$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$$                              ███   ███
+                   ███                                 | $$ $$ $$ /$$__  $$|_  $$_/        | $$$$$ /$$__  $$| $$  | $$| $$__  $$ /$$__  $$                              ███   ███
+                   ███                                 | $$  $$$$| $$  \ $$  | $$          | $$__/| $$  \ $$| $$  | $$| $$  \ $$| $$  | $$                              ███   ███
+                   ███                                 | $$\  $$$| $$  | $$  | $$ /$$      | $$   | $$  | $$| $$  | $$| $$  | $$| $$  | $$                              ███   ███
+                   ███                                 | $$ \  $$|  $$$$$$/  |  $$$$/      | $$   |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$                              █████████
+                   ███                                 |__/  \__/ \______/    \___/        |__/    \______/  \______/ |__/  |__/ \_______/                              █████████
+                   ███                                                                                                                                                  █████████                   
+                   ███                                                                                                                                                  █████████          
+                   ███                                                                                                                                                  █████████          
+                   ███                                                                                                                                                  █████████          
+                   ███                                                                                                                                                  █████████          
+                   ███                                                                                                                                                  █████████                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                   ███                                                                                                                                                  ███   ███                   
+                    ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████            
+                                                                                                                                                                        
+            ''')
         else:
             self.state = "off"
             print(f"The lamp is now is now off.")
@@ -31,18 +71,15 @@ class Room:
     def __init__(self):
         self.room_num = 0
         self.description = (
-            "You awaken, wondering how you got here. Some evil spell has been cast upon you!\n"
-            "You are sitting inside a dark room with stone floors, walls, and a low ceiling.\n"
-            "There are no doors and no windows. Water drips noisily from the ceiling.\n"
-            "A circular 'well' sits in the center of the room, the surface of the water\n"
-            "glows with an unearthly light.\n"
+            "Bathed in a soft pink glow, the room feels warm and dreamlike, its walls shimmering like rose quartz.\n" 
+            "At its center stands an ornate mirror framed in gold, said to hold more than just reflections."
         )
         # other room setup - add the lamp and set up the exits.
-        lamp = Lamp("Lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
+        lamp = Mirror("Mirror", "A plain, but worn lamp, filled with fragrant oil.", False, "off", True)
         self.objects.append(lamp)
         
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
-        self.exits = ["down"]
+        self.exits = ["down", "west", "south"]
 
 
 
@@ -64,7 +101,7 @@ class Room:
 
             #Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
-                next = self.move(other_part)
+                next = self.move(other_part, player)
                 if(next != None):
                     return next
             
@@ -106,9 +143,19 @@ class Room:
             for obj in self.objects:
                 print(f"There is a {obj.name} here.")
 
-    def move(self, direction):
-        if direction in ["down", "d", "well"]:
-            print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
+    def move(self, direction, player):
+        if direction in ["down", "d", "pole"]:
+            player.condition.append("vine_snapped")
+            print("You found a vine behind the curtain!")
+            time.sleep(3)
+            print("HURRY! PRESS <ENTER> WITHIN 2 SECONDS TO BREAK YOUR FALL!")
+            i, _, _ = select.select([sys.stdin], [], [], 2)
+            if i:
+                sys.stdin.readline()  # player reacted in time
+                print("You catch the vine just in time!")
+            else:
+                player.health -= 10
+                print("You hit the ground hard!")
             return "down"
         else:
             print("You can't go that way.")
