@@ -90,9 +90,8 @@ class Room:
     persons = []
 
     def __init__(self):
-        # Room number for the map.txt; we will hook this up as room 4
-        # WILL NEED TO UPDATE THIS
-        self.room_num = 4
+        # Room number is 17
+        self.room_num = 17
 
         self.description = (
             "You squeeze into a cramped, cluttered room.\n"
@@ -103,7 +102,7 @@ class Room:
         bed = Bed(
             "Bed",
             "A sagging bed buried in junk. It looks like you *might* be able to lie down on it.",
-            False,  # make it so you cant pick up the object
+            False, 
             None,
             True,
         )
@@ -111,7 +110,7 @@ class Room:
         weight = Weight(
             "Weight",
             "A single dusty dumbbell. Looks like it hasn't been lifted in years.",
-            True,  
+            True,
             None,
             True,
         )
@@ -124,7 +123,7 @@ class Room:
             True,
         )
 
-        # Add them to the room's object list
+        # Add objects to objects list
         self.objects.append(bed)
         self.objects.append(weight)
         self.objects.append(potion)
@@ -132,9 +131,8 @@ class Room:
         wizard = Wizard()
         self.persons.append(wizard)
 
-        # Exits from this room. West will take us back to room 0.
-        # WILL NEED TO UPDATE THIS
-        self.exits = ["west"]
+        # My exits are south to room 15 and north to room 18
+        self.exits = ["south", "north"]
 
     def enter(self, player):
         """
@@ -210,14 +208,26 @@ class Room:
     def move(self, direction):
         """
         Handle movement out of this room.
-        In this room, you can only go west (back to Room 0).
+        In this room, you can only go south (to room 15) or north (to room 18).
         """
-        if direction in ["west", "w"]:
-            print("You squeeze back through the piles of junk to the west.")
-            return "west"
+        if direction is None:
+            print("You must choose a direction.")
+            return None
+
+        direction = direction.lower().strip()
+
+        if direction in ["south", "s"]:
+            print("You carefully push through a wall of boxes and junk to the south.")
+            return "south"
+
+        elif direction in ["north", "n"]:
+            print("You step over a pile of old newspapers and head north.")
+            return "north"
+
         else:
             print("You can't go that way.")
             return None
+
 
     def look(self, target, player):
         """
@@ -268,7 +278,7 @@ class Room:
         name = item.name.lower()
 
         if name == "bed":
-            # Bed: give the player +5 health
+            # give the player +5 health
             item.use()
             player.health += 5
             print("You take a quick nap and feel a bit better.")
@@ -276,7 +286,7 @@ class Room:
             return
 
         if name == "weight":
-            # Weight: give the player +5 score
+            # give the player +5 score
             item.use()
             player.score += 5
             print("You do a few curls. Impressive form.")
@@ -284,7 +294,7 @@ class Room:
             return
 
         if name in ["health potion", "potion"]:
-            # Health potion that does nothing
+            # does nothing
             item.use()
             print("You wait for a surge of energy... but nothing changes.")
             print(f"Your health is still {player.health}.")
