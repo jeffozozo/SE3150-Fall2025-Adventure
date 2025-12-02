@@ -110,15 +110,36 @@ class Room:
             
             elif command_base == "hint":
                 self.show_hint()
+            
+            elif command_base == "attack":
+                self.attack(other_part, player)
+                # Check if player died after attack
+                # Return a valid exit so the game loop can check is_alive() and end the game
+                if not player.is_alive():
+                    return "south"  # Return any valid exit, game will end after checking is_alive()
             else:
                 self.unknown_command()
 
     # Helper functions
     def describe_room(self):
-        print(self.description)
+        # Get Barry to check his state
+        barry = self.get_item_from_object_list("barry the bee")
+        if barry and barry.state == "dead":
+            # Barry is dead, show different description
+            print(
+                "You are in large round room, surrounded by vine covered cobblestone wall.\n"
+                "Barry the Bee lies defeated on the ground, no longer a threat.\n"
+                "The room is now safe to explore.\n"
+            )
+        else:
+            # Barry is alive, show original description
+            print(self.description)
         if self.objects:
             for obj in self.objects:
-                print(f"There is a {obj.name} here.")
+                if obj.state != "dead":  # Don't show dead Barry in the list
+                    print(f"There is a {obj.name} here.")
+                elif obj.name.lower() == "barry the bee":
+                    print(f"There is a defeated {obj.name} here.")
 
     def move(self, direction):
         if direction in ["south", "s", "OTHER"]:
@@ -136,8 +157,12 @@ class Room:
             self.describe_room()
             return
 
-        if target == "barry":
-            print("He's literally Barry the Bee. He taunts you with Jerry Seinfeld's voice and says he's going to take your wife.")
+        if target in ["barry", "barry the bee"]:
+            barry = self.get_item_from_object_list("barry the bee")
+            if barry and barry.state == "dead":
+                print("Barry the Bee lies defeated on the ground. He's no longer a threat.")
+            else:
+                print("He's literally Barry the Bee. He taunts you with Jerry Seinfeld's voice and says he's going to take your wife.")
             return
         
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
@@ -217,11 +242,54 @@ class Room:
             print(f"Final Score: {player.score}")
             return "quit"
 
+    def attack(self, target, player):
+        if not target or target == "":
+            print("Attack what?")
+            return
+        
+        # Check if attacking Barry
+        if target.lower() not in ["barry", "barry the bee"]:
+            print(f"You can't attack {target}.")
+            return
+        
+        barry = self.get_item_from_object_list("barry the bee")
+        if barry == None:
+            print("Barry is not here.")
+            return
+        
+        # Check if Barry is already dead
+        if barry.state == "dead":
+            print("Barry is already defeated. There's no need to attack him again.")
+            return
+        
+        # Check if player has Mjolnir
+        if not player.has_item("mjolnir"):
+            print("You attack Barry with your bare hands!")
+            print("Barry laughs maniacally and stings you with his massive stinger.")
+            print("If only you had Mjolnir to defend yourself...")
+            print("The venom courses through your veins...")
+            print("You collapse to the ground as darkness takes you.")
+            player.health = 0  # Kill the player
+            return
+        
+        # Player has Mjolnir - kill Barry
+        print("You raise Mjolnir high above your head!")
+        print("Lightning crackles around the mighty hammer as you bring it down upon Barry.")
+        print("With a thunderous crash, Barry the Bee is struck down!")
+        print("Barry falls to the ground, defeated. The room is now safe.")
+        barry.state = "dead"
+        # Update room description
+        self.description = (
+            "You are in large round room, surrounded by vine covered cobblestone wall.\n"
+            "Barry the Bee lies defeated on the ground, no longer a threat.\n"
+            "The room is now safe to explore.\n"
+        )
+
     def show_help(self):
-        print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help")
+        print("Available commands: move, go, look, get, take, drop, attack, inventory, stats, quit, help")
 
     def show_hint(self):
-        print("This is the starting room. You probably ought to get the lamp and go down the well.")
+        print("Barry the Bee is dangerous! You'll need a powerful weapon to defeat him. Perhaps you should look for Mjolnir in another room first.")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")
