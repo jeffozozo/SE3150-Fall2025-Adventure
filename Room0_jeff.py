@@ -101,8 +101,9 @@ class Room:
         print(self.description)
         if self.objects:
             for obj in self.objects:
-                print(f"There is a {obj.name} here.")
-
+                if obj.visible:
+                    print("There is a " + obj.name)
+    
     def move(self, direction):
         if direction in ["down", "d", "well"]:
             print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
