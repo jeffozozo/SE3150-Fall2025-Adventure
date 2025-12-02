@@ -146,7 +146,7 @@ class Room:
                 print(f"There is a {obj.name} here.")
 
     def move(self, direction):
-        if direction in ["down", "d"]: #add any oYou're in a darkther commands that might go down
+        if direction in ["down", "d"]: 
             print("You descend down the stairs")
             self.has_entered_previously = True
             self.chest = None
