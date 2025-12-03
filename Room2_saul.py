@@ -1,6 +1,6 @@
 from object import Object
 from player import Player
-import sys 
+import sys  
 
 # Room 2 - Saul Aguiar
 # Connections: south (Room 1), east (Room 3 - requires mouse form), up (Room 6)
