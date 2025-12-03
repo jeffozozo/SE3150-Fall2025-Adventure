@@ -23,6 +23,7 @@ def test_dagger_exists(room):
     assert dagger is not None
     assert dagger.can_be_gotten == True
 
+
 def test_altar_cannot_be_taken(room):
     altar = None
     for obj in room.objects:
@@ -31,7 +32,8 @@ def test_altar_cannot_be_taken(room):
     assert altar is not None
     assert altar.can_be_gotten == False
 
-def test_blood_sacrifice(player, room, monkeypatch):
+
+def test_blood_sacrifice(player, room):
     # Give player the dagger
     dagger = room.find_item("dagger")
     player.inventory.append(dagger)
