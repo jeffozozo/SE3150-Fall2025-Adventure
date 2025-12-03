@@ -4,42 +4,43 @@ import sys  # For exiting the game
 
 
 # this is how you create a new object. You inherit from class Object and override the 'use' function. 
-class Lamp(Object):
+class Book(Object):
 
     def __init__(self, name, description, can_be_gotten, state, visible):
         # Call the superclass constructor
         super().__init__(name, description, can_be_gotten, state, visible)
 
     def use(self):
-        # the lamp toggles when you 'use' it. 
+        # Using the book places it on the shelf or removes it
         if self.state == "off":
             self.state = "on"
-            print(f"The lamp is now on.")
+            print(f"You carefully place the book back onto the empty shelf.")
+            print(f"You hear a soft click as the book slides into place...")
         else:
             self.state = "off"
-            print(f"The lamp is now is now off.")
-            ("lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
-
+            print(f"You remove the book from the shelf.")
+            print(f"The passage seems to seal itself once more.")
 
 class Room:
 
     objects = []
 
     def __init__(self):
-        self.room_num = 0
-        self.description = (
-            "You awaken, wondering how you got here. Some evil spell has been cast upon you!\n"
-            "You are sitting inside a dark room with stone floors, walls, and a low ceiling.\n"
-            "There are no doors and no windows. Water drips noisily from the ceiling.\n"
-            "A circular 'well' sits in the center of the room, the surface of the water\n"
-            "glows with an unearthly light.\n"
-        )
+        self.room_num = 18
+        self.description = self.description = (
+        "The room is lit like an old library. The lights are soft and warm, creating a mystic, almost enchanted atmosphere.\n"
+        "Bookshelves line the walls to the south and east, filled with old books and artifacts.\n"
+        "I notice several empty spaces among them...\n"
+        "Scattered across the floor are various books that must have fallen from the shelves.\n"
+    )
+
+
         # other room setup - add the lamp and set up the exits.
-        lamp = Lamp("Lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
-        self.objects.append(lamp)
+        book = Book("Book", "An old, dusty book with a leather cover.", True, "off", True)
+        self.objects.append(book)
         
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
-        self.exits = ["down"]
+        self.exits = ["south", "east"]
 
 
 
@@ -101,13 +102,32 @@ class Room:
         print(self.description)
         if self.objects:
             for obj in self.objects:
-                if obj.visible:
-                    print("There is a " + obj.name)
-    
+                print(f"There is a {obj.name} here.")
+
     def move(self, direction):
-        if direction in ["down", "d", "well"]:
-            print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
-            return "down"
+        book = self.get_item_from_object_list("book")
+        book_placed = book is not None and book.state == "on"
+        
+        if direction in ["south", "s"]:
+            if book_placed:
+                print(
+                    "You walk to the south bookshelf near where you placed the book.\n"
+                    "A hidden passage has opened behind it. You step through the passage."
+                )
+                return "south"
+            else:
+                print("The south bookshelf blocks your way. Perhaps something needs to be done first...")
+                return None
+        elif direction in ["east", "e"]:
+            if book_placed:
+                print(
+                    "You walk to the east bookshelf near where the book rests.\n"
+                    "A secret door has revealed itself. You enter the door."
+                )
+                return "east"
+            else:
+                print("The east bookshelf is just a wall of books. You can't go that way.")
+                return None
         else:
             print("You can't go that way.")
             return None
@@ -117,8 +137,8 @@ class Room:
             self.describe_room()
             return
 
-        if target == "well":
-            print("Upon closer inspection, the liquid is not water -- it's pure magic. It seems the well may be a portal to somewhere.")
+        if target == "bookshelf" or target == "shelf":
+            print("The bookshelf is filled with old books, but light seems to glint off two empty spaces where a book should be.")
             return
         
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
@@ -132,10 +152,10 @@ class Room:
         if target == item.name.lower().strip():
             print(item.description) 
             if(item.state != None): 
-                print(f"The {item.name} is {item.state}")                   
-            return
-            
-            print("looking at", target, "reveals nothing.")
+                if item.state == "on":
+                    print(f"The {item.name} is placed on the shelf.")
+                else:
+                    print(f"The {item.name} is not on the shelf.")
             return
     
     # you can use this as well. haha get it? use this...
@@ -199,10 +219,10 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help")
+        print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help, hint")
 
     def show_hint(self):
-        print("This is the starting room. You probably ought to get the lamp and go down the well.")
+        print("I wonder if the book on the floor has anything to do with those empty spaces on the shelves...")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")

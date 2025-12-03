@@ -2,6 +2,9 @@ from object import Object
 from player import Player
 import sys  # For exiting the game
 
+#  west,2 - saul
+#  down,4 - josh
+#  south,21 - ayden
 
 # this is how you create a new object. You inherit from class Object and override the 'use' function. 
 class Lamp(Object):
@@ -101,9 +104,8 @@ class Room:
         print(self.description)
         if self.objects:
             for obj in self.objects:
-                if obj.visible:
-                    print("There is a " + obj.name)
-    
+                print(f"There is a {obj.name} here.")
+
     def move(self, direction):
         if direction in ["down", "d", "well"]:
             print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")

@@ -9,7 +9,8 @@ class Object(ABC):
         self.visible = visible
 
     def print_description(self):
-        print(self.description)
+        if self.visible:
+            print(self.description)
 
     # this is the overloaded object.use command. If you make a new object, you have to implement this. 
     def use(self):
