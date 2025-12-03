@@ -23,16 +23,22 @@ class Chest(Object):
 
 
 class Room:
-    objects = []
 
     def __init__(self):
-        self.room_num = 0
+        self.objects = []
+
+        self.room_num = 6
         self.questions_answered = 0
-        self.location = "room"
         self.has_entered_previously = False
         self.has_riddled_previously = False
         self.riddling_attempts = 5
-        self.questions_answered = 0        
+        self.questions_answered = 0 
+        self.description = (
+            "You find yourself in a well-illuminated room with a small wooden chest in the center\n"
+            "A note on the chest reads \"Answer me these questions three, and rewards I will bestow upon ye\"\n"
+            "There is a corridor to your east, a flight of stairs leading up, and a flight of stairs leading down"
+        )
+       
         self.chest = Chest("Chest", "A small wooden chest, it's locked", False, "locked", True)
         self.reward: "Potion" = Potion(
                     "Potion",
@@ -54,15 +60,6 @@ class Room:
             "Born from stone, yet I walk as men.\nStrike me down, I rise again.\nSilent sentinel, carved with grace\nWhat stands watch in an ancient place?", 
             "I vanish in sunlight, appear in the gloam,\nA pathway to danger or to a new home.\nStep through my shimmer, your fate may unfold\nWhat am I, woven of magic untold?"
         ]
-        self.description = (
-            "You find yourself in a well-illuminated room with a small wooden chest in the center\n"
-            "A note on the chest reads \"Answer me these questions three, and rewards I will bestow upon ye\"\n"
-            "There is a corridor to your east, a flight of stairs leading up, and a flight of stairs leading down"
-        )
-
-
-
-        # other room setup - add the lamp and set up the exits.
 
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
         self.exits = ["up", "down", "east"]
@@ -72,6 +69,7 @@ class Room:
     def enter(self, player):
 
         # step 1 - Print the room description
+        
         if self.has_entered_previously == True:
             self.description = (
                 "The light that filled this room has been snuffed out, and the chest is gone"
@@ -308,6 +306,9 @@ class Room:
             self.riddling_attempts -= 1
             if self.riddling_attempts <= 0:
                 print("The chest locks tight, it seems to be disappointed in you")
+                if self.chest:
+                    self.chest.riddling_begun = False
+                    
                 if self.questions_answered == 2:
                     self.give_minor_reward(player)
                 self.has_riddled_previously = True
