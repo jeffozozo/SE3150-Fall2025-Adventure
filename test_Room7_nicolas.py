@@ -33,12 +33,10 @@ def describe_Room_7_Unit_Tests():
 
             coin = room.get_item_from_object_list("coin")
             assert coin is not None
-            # In your current Room, the coin starts "rusty"
             assert coin.state == "rusty"
 
             room.use("coin", player)
 
-            # After use(), your implementation sets it to "clean"
             assert coin.state == "clean"
 
         def it_can_look_at_the_coin():
@@ -46,9 +44,8 @@ def describe_Room_7_Unit_Tests():
             player = Player("nick", 100, "healthy", 7)
 
             with patch("builtins.print") as mock_print:
-                room.look("coins", player)
+                room.look("coin", player)
 
-            # Just check that the description was printed at least once
             calls = [str(args[0]) for args, _ in mock_print.call_args_list]
             assert any("rusty coin engraved with a swirling pattern" in c for c in calls)
 
@@ -68,7 +65,6 @@ def describe_Room_7_Unit_Tests():
             room = Room()
             with patch("builtins.print") as mock_print:
                 room.show_help()
-            # We don't care about exact text, just that something was printed
             assert mock_print.called
 
         def it_shows_hint_without_crashing():
