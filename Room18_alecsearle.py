@@ -2,8 +2,6 @@ from object import Object
 from player import Player
 import sys  # For exiting the game
 
-
-# this is how you create a new object. You inherit from class Object and override the 'use' function. 
 class Book(Object):
 
     def __init__(self, name, description, can_be_gotten, state, visible):
@@ -111,7 +109,7 @@ class Room:
         if direction in ["south", "s"]:
             if book_placed:
                 print(
-                    "You walk to the south bookshelf near where you placed the book.\n"
+                    "You walk to the south bookshelf near where you placed your book.\n"
                     "A hidden passage has opened behind it. You step through the passage."
                 )
                 return "south"
@@ -121,7 +119,7 @@ class Room:
         elif direction in ["east", "e"]:
             if book_placed:
                 print(
-                    "You walk to the east bookshelf near where the book rests.\n"
+                    "You walk to the east bookshelf close to where you placed your book.\n"
                     "A secret door has revealed itself. You enter the door."
                 )
                 return "east"
@@ -138,7 +136,7 @@ class Room:
             return
 
         if target == "bookshelf" or target == "shelf":
-            print("The bookshelf is filled with old books, but light seems to glint off two empty spaces where a book should be.")
+            print("The bookshelf is filled with old books, but light seems to glint off an empty space where a book should be.")
             return
         
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
