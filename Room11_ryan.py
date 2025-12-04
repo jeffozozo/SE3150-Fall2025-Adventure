@@ -122,7 +122,7 @@ class Room:
         if(item.name == "Baby Cat"):
             player.inventory.remove(item)
             print("You give the baby cat to the worried cat. The crowd cheers and thanks you. They give you a bag full of acorns.")
-            acornBag = Object("Bag of Acorns", "A sack filled with baby acorns", True, "chill", False)
+            acornBag = Object("bag of acorns", "A sack filled with baby acorns", True, "chill", False)
             self.objects.append(acornBag)
             self.get("bag of acorns", player)
         if(item == None):
