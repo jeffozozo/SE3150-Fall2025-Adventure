@@ -50,8 +50,9 @@ class Room:
         self.description = (
             "You are in large round room, surrounded by vine covered cobblestone wall.\n"
             "In front of you, buzzing in the air, is Barry the Bee.\n"
+            "He gaurds doors to the EAST and SOUTH\n"
             f"{barry.bee_ascii}\n"
-            "He looks angry, and launches at you. He has dealt you 10 damage.\n"
+            "He looks at you longingly, and then = launches at you. He has dealt you 10 damage.\n"
         )
        
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
@@ -60,7 +61,6 @@ class Room:
 
 
     def enter(self, player):
-
         # step 1 - Print the room description
         self.describe_room()
 
@@ -77,7 +77,7 @@ class Room:
 
             #Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
-                next = self.move(other_part)
+                next = self.move(other_part, player)
                 if(next != None):
                     return next
             
@@ -141,12 +141,13 @@ class Room:
                 elif obj.name.lower() == "barry the bee":
                     print(f"There is a defeated {obj.name} here.")
 
-    def move(self, direction):
+    def move(self, direction, player):
         if direction in ["south", "s", "OTHER"]:
-            print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
+            print("You pass through a beatiful waterfall of honey enter the next room. You are very sticky.")
+            player.condition.append("sticky")
             return "south"
         if direction in ["east", "e", "OTHER"]:
-            print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
+            print("You walk down a long corridor that gets darker and darker. You can't see anything.")
             return "east"
         else:
             print("You can't go that way.")
@@ -264,19 +265,12 @@ class Room:
         
         # Check if player has Mjolnir
         if not player.has_item("mjolnir"):
-            print("You attack Barry with your bare hands!")
-            print("Barry laughs maniacally and stings you with his massive stinger.")
-            print("If only you had Mjolnir to defend yourself...")
-            print("The venom courses through your veins...")
-            print("You collapse to the ground as darkness takes you.")
+            self.print_barry_things(True)
             player.health = 0  # Kill the player
             return
         
         # Player has Mjolnir - kill Barry
-        print("You raise Mjolnir high above your head!")
-        print("Lightning crackles around the mighty hammer as you bring it down upon Barry.")
-        print("With a thunderous crash, Barry the Bee is struck down!")
-        print("Barry falls to the ground, defeated. The room is now safe.")
+        self.print_barry_things(False)
         barry.state = "dead"
         # Update room description
         self.description = (
@@ -305,4 +299,18 @@ class Room:
             if item.name.lower() == item_name.lower():
                 return item
         return None
+
+    def print_barry_things(self, killed_barry):
+        if killed_barry:
+            print("You raise Mjolnir high above your head!")
+            print("Lightning crackles around the mighty hammer as you bring it down upon Barry.")
+            print("With a thunderous crash, Barry the Bee is struck down!")
+            print("Barry falls to the ground, defeated. The room is now safe.")
+            print("The exits to the EAST and SOUTH are no longer gaurder by Barry the Bee.")
+        else:
+            print("You attack Barry with your bare hands!")
+            print("Barry laughs maniacally and stings you with his massive stinger.")
+            print("If only you had Mjolnir to defend yourself...")
+            print("The venom courses through your veins...")
+            print("You collapse to the ground as darkness takes you.")
     
