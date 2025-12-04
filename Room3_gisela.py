@@ -1,27 +1,51 @@
 from object import Object
 from player import Player
 import sys  # For exiting the game
+import time
+import select
 
-#  west,2 - saul
-#  down,4 - josh
-#  south,21 - ayden
+#  west,2 -  through a mousedooor (saul's object) azul_oro and a needle to fight a cockroach to go back 
+#  down,4 - josh: going down the vine and it snaps set a condition 
+#  south,21 - ayden hint at code 404
 
-# this is how you create a new object. You inherit from class Object and override the 'use' function. 
-class Lamp(Object):
+class Mirror(Object):
 
     def __init__(self, name, description, can_be_gotten, state, visible):
-        # Call the superclass constructor
         super().__init__(name, description, can_be_gotten, state, visible)
 
     def use(self):
-        # the lamp toggles when you 'use' it. 
-        if self.state == "off":
-            self.state = "on"
-            print(f"The lamp is now on.")
-        else:
-            self.state = "off"
-            print(f"The lamp is now is now off.")
-            ("lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
+        print(f'''                                                                                                                                                                                                    
+ ███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                    
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+███████    ███    ████    ███████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+███████    ███    ████    ███████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                   
+███                                                                                                                         ███   ███                   
+███                                                                                                                         ███   ███                   
+███                                                                                                                         ███   ███                   
+███                                                                                                                         ███   ███                   
+███               /$$   /$$             /$$           /$$$$$$$$                                  /$$                        ███   ███
+███               | $$$ | $$            | $$          | $$_____/                                 | $$                       ███   ███
+███               | $$$$| $$  /$$$$$$  /$$$$$$        | $$     /$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$$                       ███   ███
+███               | $$ $$ $$ /$$__  $$|_  $$_/        | $$$$$ /$$__  $$| $$  | $$| $$__  $$ /$$__  $$                       ███   ███
+███               | $$  $$$$| $$  \ $$  | $$          | $$__/| $$  \ $$| $$  | $$| $$  \ $$| $$  | $$                       ███   ███
+███               | $$\  $$$| $$  | $$  | $$ /$$      | $$   | $$  | $$| $$  | $$| $$  | $$| $$  | $$                       ███   ███
+███               | $$ \  $$|  $$$$$$/  |  $$$$/      | $$   |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$                       █████████
+███               |__/  \__/ \______/    \___/        |__/    \______/  \______/ |__/  |__/ \_______/                       █████████
+███                                                                                                                         █████████                   
+███                                                                                                                         █████████          
+███                                                                                                                         █████████          
+███                                                                                                                         █████████          
+███                                                                                                                         █████████                   
+███                                                                                                                         ███   ███                   
+███                                                                                                                         ███   ███                   
+ ███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████            
+                                                                                                                                                                        
+            ''')
+        print(f"\n\nTurn away, but the mirror won’t forget you… and you shouldn’t forget it.")
 
 
 class Room:
@@ -31,27 +55,21 @@ class Room:
     def __init__(self):
         self.room_num = 0
         self.description = (
-            "You awaken, wondering how you got here. Some evil spell has been cast upon you!\n"
-            "You are sitting inside a dark room with stone floors, walls, and a low ceiling.\n"
-            "There are no doors and no windows. Water drips noisily from the ceiling.\n"
-            "A circular 'well' sits in the center of the room, the surface of the water\n"
-            "glows with an unearthly light.\n"
+            "Bathed in a soft pink glow, the room feels warm and dreamlike, its walls shimmering like rose quartz.\n" 
+            "At its center stands an ornate mirror framed in gold, said to hold more than just reflections."
         )
-        # other room setup - add the lamp and set up the exits.
-        lamp = Lamp("Lamp", "A plain, but worn lamp, filled with fragrant oil.", True, "off", True)
-        self.objects.append(lamp)
+        mirror = Mirror("Mirror", "The mirror’s surface shimmers faintly, as though hiding something beneath.", False, "gaze", True)
+        self.objects.append(mirror)
         
-        #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
-        self.exits = ["down"]
+        #my exits
+        self.exits = ["down", "west", "south"]
 
 
 
     def enter(self, player):
 
-        # step 1 - Print the room description
         self.describe_room()
 
-        # step 2 - make your own command loop - watch carefully about how to parse commands:
         while True:
             command = input("> ").lower().strip()
             parts = command.split(" ", 1)
@@ -64,7 +82,7 @@ class Room:
 
             #Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
-                next = self.move(other_part)
+                next = self.move(other_part, player)
                 if(next != None):
                     return next
             
@@ -73,9 +91,6 @@ class Room:
 
             elif command_base == "look":
                 self.look(other_part, player)
-
-            elif command_base in ["get", "take"]:
-                self.get(other_part, player)
 
             elif command_base in ["drop", "put"]:
                 self.drop(other_part, player)
@@ -106,10 +121,35 @@ class Room:
             for obj in self.objects:
                 print(f"There is a {obj.name} here.")
 
-    def move(self, direction):
-        if direction in ["down", "d", "well"]:
-            print("You jump into the well, and your whole body tingles as you slip below the surface of the liquid. > blink <")
+    def move(self, direction, player):
+        if direction in ["down", "d", "vine"]:
+            player.condition.append("vine_snapped")
+            print("You found a vine behind the curtain!")
+            time.sleep(1)
+            print("...")
+            time.sleep(1)
+            print("HURRY! PRESS <ENTER> WITHIN 2 SECONDS TO BREAK YOUR FALL!")
+            i, _, _ = select.select([sys.stdin], [], [], 2)
+            if i:
+                sys.stdin.readline()  # player reacted in time
+                print("You catch the vine just in time!")
+            else:
+                player.health -= 10
+                print("You hit the ground hard!")
             return "down"
+        elif direction in ["west","w"]:
+            if "slayed_cucaracha" not in player.condition:
+                print("A pest stands in your way. ")
+                return None
+            if "mouse" in player.condition:
+                print("Through the cracks you go")
+                return "west"
+            else:
+                print("The crack in the wall is far too small for you to fit through.")
+                print("You would need to be much smaller... perhaps the size of a mouse?")
+                return None
+        elif direction in ["south", "s"]:
+            return "south"
         else:
             print("You can't go that way.")
             return None
@@ -118,11 +158,9 @@ class Room:
         if(target == None or target == "" ):
             self.describe_room()
             return
-
-        if target == "well":
-            print("Upon closer inspection, the liquid is not water -- it's pure magic. It seems the well may be a portal to somewhere.")
+        if target in ["cockroach", "cucaracha"]:
+            print("Where's pest control when you need it? It's ruining my aesthetic. I need something sharp to take care of it.")
             return
-        
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
         item = self.get_item_from_inventory(target,player)
         if item == None:
@@ -137,15 +175,15 @@ class Room:
                 print(f"The {item.name} is {item.state}")                   
             return
             
-            print("looking at", target, "reveals nothing.")
-            return
     
     # you can use this as well. haha get it? use this...
     def use(self, item_name, player):
         item = self.get_item_from_inventory(item_name,player)
         if(item == None):
             item = self.get_item_from_object_list(item_name)
-        
+        if item in ["Dagger", "Needle", "Mjolnir"]:
+            print("Goodjob Amig@! The mousedoor is no longer gaurded by la cucaracha! La cucaracha! \nYa no puede caminar. porque no tiene...porque no tiene... patas para caminar. ")
+            player.condition.append("slayed_cucaracha")
         #this room only allows you to use the objects in the list or inventory. That is not a global constraint however and you can add whatever use functions you like.
         if(item == None):
             print("you can't use that.")
@@ -153,30 +191,6 @@ class Room:
         
         item.use()
         
-
-    # this code could also probably be used verbatim
-    def get(self, item_name, player):
-
-        # Check if the player already has the item in their inventory
-        if player.has_item(item_name):
-            print(f"You already have the {item_name}.")
-            return
-        
-        item = self.get_item_from_object_list(item_name)
-        if(item == None):
-            print(f"{item_name} is not here.")
-            return
-        
-        if not item.can_be_gotten:
-            print(f"The {item.name} cannot be taken.")
-            return
-
-        # Add the object to the player's inventory and remove it from the room
-        player.inventory.append(item)
-        self.objects.remove(item)
-        print(f"You take the {item.name} and add it to your inventory.")
-        return
-    
     def drop(self, item_name, player):
         item = self.get_item_from_inventory(item_name,player)
         if(item == None):
@@ -201,10 +215,10 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help")
+        print("Available commands: move, go, look, drop, inventory, stats, quit, help")
 
     def show_hint(self):
-        print("This is the starting room. You probably ought to get the lamp and go down the well.")
+        print("This is the starting room. You probably ought to get the lamp and go down the well.") #CHANGE THIS
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")

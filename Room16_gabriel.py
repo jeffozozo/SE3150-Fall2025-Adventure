@@ -408,7 +408,7 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("\nAvailable commands:")
+        print("\nThese are the available commands:")
         print("  move/go <direction> - Move in a direction (west)")
         print("  look [item] - Look at the room or an item")
         print("  examine <item> - Examine something more closely")
