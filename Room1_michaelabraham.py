@@ -3,6 +3,7 @@ from player import Player
 import sys  # For exiting the game
 import mikesminigame
 
+# so I can repush
 
 # Electric Guitar object - when used, allows player to transcend to the upper room
 class ElectricGuitar(Object):
@@ -436,12 +437,28 @@ class Room:
         print("  help/? - Show this help message")
         print("  quit - Quit the game")
         print("\nVisible exits: east, north, up")
+        print("\n" + "="*50)
+        print("HOW TO TRANSCEND - Simple Flow:")
+        print("="*50)
+        print("1. First, try to use the Mystic Bubbler (peace pipe)")
+        print("2. Then, use Doug and ask him for wisdom")
+        print("3. Use the Mystic Bubbler again (you'll know how now!)")
+        print("4. Finally, use the Electric Guitar to shred and transcend!")
+        print("="*50)
 
     def show_hint(self):
-        print("The electric guitar in the center of the room seems to have special properties.")
-        print("Try using it—you might discover a way to reach that shimmering opening above you.")
-        print("But first, you might need to gain some knowledge...")
-        print("Someone in the room seems to know how to use that mystical vessel.")
+        print("="*50)
+        print("HINT: How to Transcend")
+        print("="*50)
+        print("Step 1: Try using the Mystic Bubbler (the peace pipe)")
+        print("        You'll discover you need to learn how first...")
+        print("\nStep 2: Use Doug and ask him for wisdom")
+        print("        He knows the ancient ways of the peace pipe!")
+        print("\nStep 3: Use the Mystic Bubbler again")
+        print("        Now you'll gain the knowledge you need!")
+        print("\nStep 4: Use the Electric Guitar to shred")
+        print("        With your new knowledge, you can transcend!")
+        print("="*50)
     
 
     def unknown_command(self):

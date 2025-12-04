@@ -1,28 +1,35 @@
 from object import Object
 from player import Player
-import sys  # For exiting the game
-import pygame
+import sys
 
 
 class Room:
-
     objects = []
-
     in_box = False
 
     def __init__(self):
         self.room_num = 10
-        self.description = "as you enter the room you see ......."
+        self.description = (
+            "In the center of the room is a large treasure chest with an unusual keyhole.\n"
+            "At the base of the south door there is a poor baby nyan cat trying to get through.\n"
+            "In the corner of the room, you see a mass of darkness rumbling softly.\n"
+            "From the darkness, a pair of glowing red eyes stare at you.\n"
+        )
 
         self.exits = ["west", "south"]
 
+        self.darkness = Object(
+            "mass of darkness", "A mass of pure darkness", False, True, True)
+        self.objects.append(self.darkness)
+
+        self.baby_cat = Object(
+            "Baby Cat", "a baby nyan cat", True, True, True)
+        self.objects.append(self.baby_cat)
+
+        self.quest_accepted = False
+
     def enter(self, player):
-        # step 0 - special setup
-
-        # step 1 - Print the room description
         self.describe_room()
-
-        # step 2 - make your own command loop
         while True:
             command = input("> ").lower().strip()
             parts = command.split(" ", 1)
@@ -33,16 +40,35 @@ class Room:
             else:
                 other_part = ""
 
-            # Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
                 next = self.move(other_part)
                 if (next != None):
                     return next
 
+            elif command_base == "use":
+                self.use(other_part, player)
+
+            elif command_base == "look":
+                self.look(other_part, player)
+
+            elif command_base in ["get", "take"]:
+                self.get(other_part, player)
+
+            elif command_base in ["drop", "put"]:
+                self.drop(other_part, player)
+
+            elif command_base == "inventory":
+                self.show_inventory(player)
+
+            elif command_base == "stats":
+                self.show_stats(player)
+
+            elif command_base == "quit":
+                if (self.quit_game(player) == "quit"):
+                    return "quit"
+
             else:
                 print("unknown command.")
-
-    # Helper functions
 
     def describe_room(self):
         print(self.description)
@@ -64,16 +90,53 @@ class Room:
             self.describe_room()
             return
 
+        if "darkness" in target and self.darkness in self.objects:
+            print("\033[31m")
+            if not self.quest_accepted:
+                print(
+                    "You there.\n"
+                    "You want to the endless treasures inside of that chest?\n"
+                    "I require acorns.\n"
+                    "Bring me a bag of them and I just might give you the key."
+                )
+                self.quest_accepted = True
+            else:
+                print(
+                    "What are you waiting for?\n"
+                    "Bring me a bag of acorns.\n"
+                    "Its best if you hurry, you are starting to look pretty tasty..."
+                )
+            print("\033[0m")
+            return
+
+        if "cat" in target and self.baby_cat in self.objects:
+            print("\033[35m")
+            print("Pwease hewp me! I needs to go home, home, home!!!")
+            print("\033[0m")
+            return
+
         print(target + " is not here or there is nothing interesting about it.")
 
-    # you can use this as well. haha get it? use this...
-
     def use(self, item_name, player):
-
-        # find where the item is it could be in the inventory or object list of the room.
         item = self.get_item_from_inventory(item_name, player)
         if (item == None):
             item = self.get_item_from_object_list(item_name)
+
+        if (item and "bag of acorns" in item.name.lower()):
+            print(
+                "You give the bag of acorns to the mysterious creature.\n"
+                "The darkness fades away to reveal a lone squirrel sitting on a stool.\n\n"
+                "\033[31mThank you! I really needed this. Here is your reward!\n\n\033[0m"
+                "He hands you a small key made of sticks before running off with his acorns.\n"
+                "It looks like he was just hungry!"
+            )
+            player.inventory.remove(item)
+            self.objects.remove(self.darkness)
+            return
+
+        if (item and "baby cat" in item.name.lower()):
+            print("nya!")
+            return
 
         if (item == None):
             print("you can't use that.")
@@ -81,10 +144,7 @@ class Room:
 
         item.use()
 
-    # this code could also probably be used verbatim
     def get(self, item_name, player):
-
-        # Check if the player already has the item in their inventory
         if player.has_item(item_name):
             print(f"You already have the {item_name}.")
             return
@@ -98,7 +158,6 @@ class Room:
             print(f"The {item.name} cannot be taken.")
             return
 
-        # Add the object to the player's inventory and remove it from the room
         player.inventory.append(item)
         self.objects.remove(item)
         print(f"You take the {item.name} and add it to your inventory.")
@@ -110,7 +169,6 @@ class Room:
             print(f"You don't have the {item_name}.")
             return
 
-        # remove the item from the inventory and put it in the object list
         player.inventory.remove(item)
         self.objects.append(item)
         print(f"You drop the {item.name}.")

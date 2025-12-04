@@ -1,53 +1,31 @@
 from object import Object
 from player import Player
-import sys  # For exiting the game
+import sys
 
-class Book(Object):
-
+class Cat(Object):
     def __init__(self, name, description, can_be_gotten, state, visible):
-        # Call the superclass constructor
         super().__init__(name, description, can_be_gotten, state, visible)
-
+    
     def use(self):
-        # Using the book places it on the shelf or removes it
-        if self.state == "off":
-            self.state = "on"
-            print(f"You carefully place the book back onto the empty shelf.")
-            print(f"You hear a soft click as the book slides into place...")
-        else:
-            self.state = "off"
-            print(f"You remove the book from the shelf.")
-            print(f"The passage seems to seal itself once more.")
+        print(f"My little baby is missing! Please help me find her!")
 
 class Room:
-
     objects = []
-
     def __init__(self):
-        self.room_num = 18
-        self.description = self.description = (
-        "The room is lit like an old library. The lights are soft and warm, creating a mystic, almost enchanted atmosphere.\n"
-        "Bookshelves line the walls to the south and east, filled with old books and artifacts.\n"
-        "I notice several empty spaces among them...\n"
-        "Scattered across the floor are various books that must have fallen from the shelves.\n"
-    )
-
-
-        # other room setup - add the lamp and set up the exits.
-        book = Book("Book", "An old, dusty book with a leather cover.", True, "off", True)
-        self.objects.append(book)
-        
-        #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
-        self.exits = ["south", "east"]
-
-
+        self.room_num = 11
+        self.description = (
+            "You enter the room and find yourself temporarily blinded.\n"
+            "It takes a minute to recover, you look up and are surrounded by some tiny cats.\n"
+            "The room is bright, you already have a headache from all the bright colors.\n"
+            'One of the tiny cats tells you "WE ARE MISSING A BABY".\n'
+        )
+        self.exits = ["north", "south"]
+        cat = Cat("Cat", "A rainbow cat", False, "worried", True)
+        self.objects.append(cat)
 
     def enter(self, player):
-
-        # step 1 - Print the room description
         self.describe_room()
 
-        # step 2 - make your own command loop - watch carefully about how to parse commands:
         while True:
             command = input("> ").lower().strip()
             parts = command.split(" ", 1)
@@ -58,7 +36,6 @@ class Room:
             else:
                 other_part = ""
 
-            #Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
                 next = self.move(other_part)
                 if(next != None):
@@ -94,86 +71,68 @@ class Room:
                 self.show_hint()
             else:
                 self.unknown_command()
-
-    # Helper functions
+            
     def describe_room(self):
         print(self.description)
         if self.objects:
             for obj in self.objects:
                 print(f"There is a {obj.name} here.")
-
+    
     def move(self, direction):
-        book = self.get_item_from_object_list("book")
-        book_placed = book is not None and book.state == "on"
-        
-        if direction in ["south", "s"]:
-            if book_placed:
-                print(
-                    "You walk to the south bookshelf near where you placed your book.\n"
-                    "A hidden passage has opened behind it. You step through the passage."
-                )
-                return "south"
-            else:
-                print("The south bookshelf blocks your way. Perhaps something needs to be done first...")
-                return None
-        elif direction in ["east", "e"]:
-            if book_placed:
-                print(
-                    "You walk to the east bookshelf close to where you placed your book.\n"
-                    "A secret door has revealed itself. You enter the door."
-                )
-                return "east"
-            else:
-                print("The east bookshelf is just a wall of books. You can't go that way.")
-                return None
+        if direction in ["north", "n"]:
+            print("You open the creepy door and walk through.")
+            return "north"
+        elif direction in ["south", "s"]:
+            print("You open the strangely soft door and walk through.")
+            return "south"
         else:
             print("You can't go that way.")
             return None
-
+    
     def look(self, target, player):
         if(target == None or target == "" ):
             self.describe_room()
             return
 
-        if target == "bookshelf" or target == "shelf":
-            print("The bookshelf is filled with old books, but light seems to glint off an empty space where a book should be.")
+        if(target == "cat"):
+            print("You can barely make out any details, but the cat seems to have the body of a poptart, and looks strangely pixelated.....")
             return
         
-        # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
         item = self.get_item_from_inventory(target,player)
         if item == None:
             item = self.get_item_from_object_list(target)
             if item == None:
                 print("There is nothing like " + target + " to look at.")
                 return
-
+            
         if target == item.name.lower().strip():
             print(item.description) 
             if(item.state != None): 
-                if item.state == "on":
-                    print(f"The {item.name} is placed on the shelf.")
-                else:
-                    print(f"The {item.name} is not on the shelf.")
+                print(f"The {item.name} is {item.state}")                   
             return
+            
+        print("looking at", target, "reveals nothing.")
+        return
     
-    # you can use this as well. haha get it? use this...
     def use(self, item_name, player):
         item = self.get_item_from_inventory(item_name,player)
         if(item == None):
             item = self.get_item_from_object_list(item_name)
         
-        #this room only allows you to use the objects in the list or inventory. That is not a global constraint however and you can add whatever use functions you like.
+        if(item.name == "Baby Cat"):
+            player.inventory.remove(item)
+            print("You give the baby cat to the worried cat. The crowd cheers and thanks you. They give you a bag full of acorns.")
+            acornBag = Object("bag of acorns", "A sack filled with baby acorns", True, "chill", False)
+            self.objects.append(acornBag)
+            self.get("bag of acorns", player)
         if(item == None):
             print("you can't use that.")
             return
         
         item.use()
-        
-
-    # this code could also probably be used verbatim
+    
     def get(self, item_name, player):
 
-        # Check if the player already has the item in their inventory
         if player.has_item(item_name):
             print(f"You already have the {item_name}.")
             return
@@ -187,7 +146,6 @@ class Room:
             print(f"The {item.name} cannot be taken.")
             return
 
-        # Add the object to the player's inventory and remove it from the room
         player.inventory.append(item)
         self.objects.remove(item)
         print(f"You take the {item.name} and add it to your inventory.")
@@ -199,12 +157,11 @@ class Room:
             print(f"You don't have the {item_name}.")
             return
         
-        # remove the item from the inventory and put it in the object list
         player.inventory.remove(item)
         self.objects.append(item)
         print(f"You drop the {item.name}.")
         return 
-
+    
     def show_inventory(self, player):
         player.show_inventory()
 
@@ -217,10 +174,10 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help, hint")
+        print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help")
 
     def show_hint(self):
-        print("I wonder if the book on the floor has anything to do with those empty spaces on the shelves...")
+        print("You should probably talk(use) to a cat.")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")
@@ -236,4 +193,3 @@ class Room:
             if item.name.lower() == item_name.lower():
                 return item
         return None
-    

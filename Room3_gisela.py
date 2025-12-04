@@ -232,7 +232,7 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("Available commands: move, go, look, drop, inventory, stats, exits, quit, help, hint")
+        print("Available commands: move, go, look, use, drop, inventory, stats, exits, quit, help, hint")
 
     def show_hint(self, player):
         print(
