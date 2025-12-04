@@ -36,7 +36,7 @@ class Room:
             "But lemme tell ya, not just anyone can wield this baby. You gotta be WORTHY! "
             "You think you got what it takes? Answer my questions, and we'll see if you're ready!\""
         )
-        self.exits = ["south"]
+        self.exits = ["west", "north", "east"]
         self.quiz_completed = False
         self.quiz_failed = False
         
@@ -76,12 +76,12 @@ class Room:
                         self.quiz_failed = False
                         return next_room
                 elif command_base in ["help", "?"]:
-                    print("Curtis won't let you do anything. You can only 'move south' to leave.")
+                    print("Curtis won't let you do anything. You can only 'move west' to leave.")
                 elif command_base == "quit":
                     if self.quit_game(player) == "quit":
                         return "quit"
                 else:
-                    print("Curtis blocks you. \"I said GET OUTTA HERE! Try 'move south' to leave!\"")
+                    print("Curtis blocks you. \"I said GET OUTTA HERE! Try 'move west' to leave!\"")
                 continue
 
             if command_base in ["move", "go"]:
@@ -179,14 +179,15 @@ class Room:
         print("Curtis strokes his chin thoughtfully...")
         print("="*60 + "\n")
         
-        required_correct = 2 if player.worthy else 3
+        is_worthy = "worthy" in player.condition
+        required_correct = 2 if is_worthy else 3
         
         if correct_answers >= required_correct:
-            if player.worthy:
+            if is_worthy:
                 print("\"You know what? I heard about you savin' that squirrel! That's the kinda thing a TRUE hero does!")
                 print("And you got", correct_answers, "outta 3 right. That's good enough for me!\"")
             else:
-                print("\"PERFECT! You got ALL THREE right!")
+                print("\"PERFECT! You got ALL THREE right!\"")
             
             print("You got the heart of a HERO! You understand what it means to be WORTHY!")
             print("You stand up for the little guy, you don't back down, and you fight for what's RIGHT!")
@@ -208,9 +209,9 @@ class Room:
             
             print("You can go west, north, and east from here.")
         else:
-            if player.worthy:
+            if is_worthy:
                 print("\"Ehhhh, I dunno pal. You only got", correct_answers, "outta 3 right.")
-                print("Even though you saved that squirrel, you still need at least 2 outta 3!")
+                print("Even though you saved that squirrel, you still need at least 2 outta 3!\"")
             else:
                 print("\"Ehhhh, I dunno pal. You only got", correct_answers, "outta 3 right.")
                 print("You need to get ALL THREE questions right to prove you're worthy!")
@@ -240,9 +241,16 @@ class Room:
                     print(f"There is {obj.name} here, resting on a stone pedestal.")
 
     def move(self, direction):
-        if direction in ["south", "s"]:
-            print("You head back through the door to the south.")
-            return "south"
+        if direction in ["west", "w"]:
+            print("You head back through the door to the west.")
+            return "west"
+        elif direction in ["north", "n"]:
+            print("You push open a heavy stone door to the north.")
+            print("You hear an ominous buzzing sound growing louder...")
+            return "north"
+        elif direction in ["east", "e"]:
+            print("You head east through a narrow passage.")
+            return "east"
         else:
             print("You can't go that way.")
             return None

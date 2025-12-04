@@ -125,6 +125,10 @@ def main():
         #go to the next room which results in giving us the subsequent room
         next_direction = rooms[current_room].enter(player)
         
+        # Handle quit command
+        if next_direction == "quit":
+            break
+        
         # Check if the next direction is valid for the current room
         if next_direction not in game_map[current_room]:
             print(f"room {current_room} tried to go {next_direction} and that's not in the game_map:")
