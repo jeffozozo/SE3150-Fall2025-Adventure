@@ -46,14 +46,16 @@ def test_reward_added(monkeypatch):
     room.enter(player)
     assert any(item.name == "Bag of Acorns" for item in player.inventory)
 
-def test_exit_blocked_until_reward(monkeypatch):
+def test_exit_blocked_until_reward(monkeypatch, capsys):
     room = Room()
     player = FakePlayer()
     inputs = ["east", "talk", "incorrectly", "door", "piano", "east"]
     feed_inputs(monkeypatch, inputs)
     result = room.enter(player)
+    out = capsys.readouterr().out
+    # Assert that the first "east" command is blocked (look for a blocking message)
+    assert "You can't leave yet" in out or "You must earn the reward before exiting" in out or "The exit is blocked" in out
     assert result == "east"
-
 def test_talk_after_reward(monkeypatch):
     room = Room()
     player = FakePlayer()
