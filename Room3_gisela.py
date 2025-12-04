@@ -232,15 +232,15 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("Available commands: move, go, look, drop, inventory, stats, exits, quit, help")
+        print("Available commands: move, go, look, drop, inventory, stats, exits, quit, help, hint")
 
     def show_hint(self, player):
-        print("""
-Try looking at the mirror more closely...
-There's a vine hidden behind a curtain that leads down.
-That crack in the wall looks too small... unless you were smaller?
-Take a LOOK at these exits: down, west, south.
-        """)
+        print(
+            """Try looking at the mirror more closely...
+            There's a vine hidden behind a curtain that leads down.
+            That crack in the wall looks too small... unless you were smaller?
+            Take a LOOK at these exits: down, west, south.
+            """)
         if "slayed_cucaracha" not in player.condition:
             print("A cockroach blocks the western passage. You'll need something sharp.")
         elif "mouse" not in player.condition:
