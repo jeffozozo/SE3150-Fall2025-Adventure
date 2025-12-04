@@ -299,7 +299,7 @@ class Room:
         print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help, hint")
 
     def show_hint(self):
-        print("tacos")
+        print("Move north to proceed. The phrase 'tacos' might help when answering questions.")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")
