@@ -47,7 +47,8 @@ def parse_map_file(filename):
             if current_room_index is not None:
                 rooms.append(connections)
             
-            current_room_index = int(line.split(":")[1])  # Extract the room number
+            first_split = line.split()[0]
+            current_room_index = int(first_split.split(":")[1])  # Extract the room number
             connections = {}
         elif line:
             # Parse the connections in the format "direction,room_number"
@@ -141,3 +142,4 @@ def main():
 # Run the game
 if __name__ == "__main__":
     main()
+ 
