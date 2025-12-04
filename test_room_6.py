@@ -29,7 +29,7 @@ def describe_test_room_entry():
         assert room.description == (
             "You find yourself in a well-illuminated room with a small wooden chest in the center\n"
             "A note on the chest reads \"Answer me these questions three, and rewards I will bestow upon ye\"\n"
-            "There is a corridor to your east, a flight of stairs leading up, and a flight of stairs leading down"
+            "There is a corridor to your east, and a flight of stairs leading down"
         )
     def it_loads_the_correct_amount_of_questions(load_and_exit):
         player = Player(
