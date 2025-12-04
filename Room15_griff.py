@@ -3,7 +3,7 @@ from player import Player
 import sys
 import random
 import os
-
+import time
 
 class Room:
 
@@ -78,9 +78,9 @@ class Room:
                 print(f"There is a {obj.name} here.")
 
     def move(self, direction):
-        if direction in ["east", "e"]:
-            print("You take the east exit out of the casino.")
-            return "east"
+        if direction in ["south", "s"]:
+            print("You take the south exit out of the casino.")
+            return "south"
         elif direction in ["north", "n"]:
             print("A janitor closet lays to the north, you pass through the door.")
             return "north"
@@ -97,7 +97,6 @@ class Room:
             self.describe_room()
             return
 
-        #special case the table
         if target == "bloodjack":
             print("There is a game table called 'Blood Jack'")
             return
@@ -106,23 +105,12 @@ class Room:
             print("There is a slot machine titled 'Score Slots'")
             return
 
-        # Check if the object is in the room object list or in the player's inventory and print its description and status.
-        # this code is pretty generic can could probably be used without much modification in your room.
         item = self.get_item_from_inventory(target,player)
         if item == None:
             item = self.get_item_from_object_list(target)
             if item == None:
                 print("There is nothing like " + target + " to look at.")
                 return
-
-        if target == item.name.lower().strip():
-            print(item.description)
-            if(item.state != None):
-                print(f"The {item.name} is {item.state}")
-            return
-
-            print("looking at", target, "reveals nothing.")
-            return
 
 
     # you can use this as well. haha get it? use this...
@@ -511,9 +499,6 @@ def ScoreSlots(player):
         return reels
 
     def animate_spin(final_reels):
-        """Animate the spinning slot machine before showing final result"""
-        import time
-
         weighted_symbols = ['O'] * 9 + ['W'] * 5 + ['7'] * 2 + ['L'] * 4
 
         for i in range(8):
@@ -655,7 +640,7 @@ def ScoreSlots(player):
             elif symbol == 'O':
                 payouts.append(('MEGA JACKPOT - ALL Os!!!', wager * 500))
                 winning_lines.append((positions, symbol))
-            return payouts, winning_line
+            return payouts, winning_lines
 
         for row in range(3):
             symbols = [reels[col][row] for col in range(5)]
