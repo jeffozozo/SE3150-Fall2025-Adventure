@@ -36,7 +36,7 @@ class Room:
         self.description = (
             "You find yourself in a well-illuminated room with a small wooden chest in the center\n"
             "A note on the chest reads \"Answer me these questions three, and rewards I will bestow upon ye\"\n"
-            "There is a corridor to your east, and a flight of stairs leading down"
+            "There is a corridor to your east, a flight of stairs leading up, and a flight of stairs leading down"
         )
        
         self.chest = Chest("Chest", "A small wooden chest, it's locked", False, "locked", True)
@@ -62,7 +62,7 @@ class Room:
         ]
 
         #this is how you declare your exits. It doesn't matter what room the attach to, I'll worry about that in the global level. 
-        self.exits = ["down", "east"]
+        self.exits = ["up", "down", "east"]
 
 
 
@@ -154,6 +154,11 @@ class Room:
             self.has_entered_previously = True
             self.chest = None
             return "east"
+        elif direction in ["up", "u"]:
+            print("you ascend the stairs")
+            self.has_entered_previously = True
+            self.chest = None
+            return "up"
         else:
             print("You can't go that way.")
             return None

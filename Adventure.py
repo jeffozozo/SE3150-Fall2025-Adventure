@@ -18,21 +18,21 @@ def load_rooms():
     #create room objects for each of the room files.
     # Sort the room files based on the room number
     # Extract the number from the filename and use it as the sort key
-    room_files.sort(key=lambda x: int(x[4:].split("_")[0]))
+    #room_files.sort(key=lambda x: int(x[4:].split("_")[0]))
 
     # Now load the rooms in the correct order
-    rooms = []
+    rooms = {}
     for room_file in room_files:
         room_name = room_file[:-3]  # Strip '.py' from the filename
         room_module = importlib.import_module(room_name)
         room_instance = room_module.Room()
-        rooms.append(room_instance)
+        rooms[int(room_file[4:].split("_")[0])] = room_instance
 
     return rooms
 
 # Load the game map from a file
 def parse_map_file(filename):
-    rooms = []
+    rooms = {}
     
     with open(filename, 'r') as file:
         lines = file.readlines()
@@ -45,9 +45,9 @@ def parse_map_file(filename):
         if line.startswith("Room:"):
             # When we encounter a new room, store the current room's connections
             if current_room_index is not None:
-                rooms.append(connections)
+                rooms[current_room_index] = connections
             
-            current_room_index = int(line.split(":")[1])  # Extract the room number
+            current_room_index = int(line.split(":")[1].split("-")[0])  # Extract the room number
             connections = {}
         elif line:
             # Parse the connections in the format "direction,room_number"
@@ -56,8 +56,7 @@ def parse_map_file(filename):
 
     # Add the last room's connections to the list
     if current_room_index is not None:
-        rooms.append(connections)
-
+        rooms[current_room_index] = connections
     return rooms
 
 def print_intro(player):
@@ -132,7 +131,6 @@ def main():
         
         # Set the current room to the one connected in the specified direction
         current_room = game_map[current_room][next_direction]
-
         # Check if the player is dead
         if not player.is_alive():
             print("You have perished in the dungeon! Game over. Your score is: ", player.score)
