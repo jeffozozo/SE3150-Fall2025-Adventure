@@ -27,6 +27,7 @@ class Room:
         self.objects.append(self.baby_cat)
 
         self.quest_accepted = False
+        self.chest_opened = False
 
     def enter(self, player):
         self.describe_room()
@@ -130,9 +131,18 @@ class Room:
                 "He hands you a small key made of sticks before running off with his acorns.\n"
                 "It looks like he was just hungry!"
             )
+            player.inventory.append(
+                Object("stick key", "a small key made of sticks", True, True, True))
             player.inventory.remove(item)
             self.objects.remove(self.darkness)
             return
+
+        if (item and "stick key" in item.name.lower()):
+            if (not self.chest_opened):
+                print(
+                    "You insert the key into the chest, and it fits perfectly.  The chest opens to reveal 100 points!")
+                player.score += 100
+                pass
 
         if (item and "baby cat" in item.name.lower()):
             print("nya!")
