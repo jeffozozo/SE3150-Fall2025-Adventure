@@ -1,6 +1,5 @@
 from object import Object
 from player import Player
-import sys
 
 
 class LightningSkull(Object):
@@ -30,7 +29,6 @@ class Room:
         )
 
         self.skeleton_defeated = False
-        self.tree_awakened = False
 
         self.objects = []
 
@@ -54,39 +52,39 @@ class Room:
         while True:
             raw = input("> ").lower().strip()
             parts = raw.split(" ", 1)
-            cmd = parts[0]
+            command = parts[0]
             arg = parts[1] if len(parts) > 1 else ""
 
-            if cmd in ["move", "go"]:
-                nxt = self.move(arg, player)
-                if nxt is not None:
-                    return nxt
+            if command in ["move", "go"]:
+                next = self.move(arg, player)
+                if next is not None:
+                    return next
 
-            elif cmd == "look":
+            elif command == "look":
                 self.look(arg, player)
 
-            elif cmd in ["get", "take"]:
+            elif command in ["get", "take"]:
                 self.get(arg, player)
 
-            elif cmd in ["drop", "put"]:
+            elif command in ["drop", "put"]:
                 self.drop(arg, player)
 
-            elif cmd == "use":
+            elif command == "use":
                 self.use(arg, player)
 
-            elif cmd == "inventory":
+            elif command == "inventory":
                 player.show_inventory()
 
-            elif cmd == "stats":
+            elif command == "stats":
                 player.print_stats()
 
-            elif cmd in ["help", "?"]:
+            elif command in ["help", "?"]:
                 self.show_help()
 
-            elif cmd == "hint":
+            elif command == "hint":
                 self.show_hint()
 
-            elif cmd == "quit":
+            elif command == "quit":
                 if self.quit_game(player) == "quit":
                     return "quit"
 
@@ -124,29 +122,29 @@ class Room:
 
 
     def look(self, target, player):
-        t = target.lower().strip()
+        target = target.lower().strip()
 
-        if t == "" or t is None:
+        if target == "" or target is None:
             self.describe_room()
             return
 
-        if t in ["tree", "squirrel", "jeff", "dj", "skeleton"]:
+        if target in ["tree", "squirrel", "jeff", "dj", "skeleton"]:
             self.trigger_fight_scene(player)
             return
 
-        if t in ["door", "west door"]:
+        if target in ["door", "west door"]:
             print("A tall black metal door. Heavy fog pours from its seams.")
             return
 
-        item = self.get_item_from_inventory(t, player)
+        item = self.get_item_from_inventory(target, player)
         if not item:
-            item = self.get_item_from_object_list(t)
+            item = self.get_item_from_object_list(target)
 
         if item:
             print(item.description)
             return
 
-        print(f"There is nothing like '{t}' to look at.")
+        print(f"There is nothing like '{target}' to look at.")
 
 
     def trigger_fight_scene(self, player):
