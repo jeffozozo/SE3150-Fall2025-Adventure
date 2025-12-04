@@ -53,7 +53,7 @@ class Room:
     objects = []
 
     def __init__(self):
-        self.room_num = 0
+        self.room_num = 3
         self.description = (
             "Bathed in a soft pink glow, the room feels warm and dreamlike, its walls shimmering like rose quartz.\n" 
             "At its center stands an ornate mirror framed in gold, said to hold more than just reflections."
