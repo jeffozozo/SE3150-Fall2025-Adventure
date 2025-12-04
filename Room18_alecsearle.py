@@ -60,7 +60,7 @@ class Room:
 
             #Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
-                next = self.move(other_part)
+                next = self.move(other_part, player)
                 if(next != None):
                     return next
             
@@ -102,8 +102,12 @@ class Room:
             for obj in self.objects:
                 print(f"There is a {obj.name} here.")
 
-    def move(self, direction):
+    def move(self, direction, player):
+        # Check for book in both room and player inventory
         book = self.get_item_from_object_list("book")
+        if book is None:
+            book = self.get_item_from_inventory("book", player)
+        
         book_placed = book is not None and book.state == "on"
         
         if direction in ["south", "s"]:
