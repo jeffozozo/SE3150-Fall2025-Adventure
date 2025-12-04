@@ -58,8 +58,8 @@ class Room:
             "Bathed in a soft pink glow, the room feels warm and dreamlike, its walls shimmering like rose quartz.\n" 
             "At its center stands an ornate mirror framed in gold, said to hold more than just reflections."
         )
-        mirror = Mirror("Mirror", "The mirror’s surface shimmers faintly, as though hiding something beneath.", False, "gaze", True)
-        self.objects.append(mirror)
+        self.mirror = Mirror("Mirror", "The mirror’s surface shimmers faintly, as though hiding something beneath.", False, "gaze", True)
+        self.objects.append(self.mirror)
         
         #my exits
         self.exits = ["down", "west", "south"]
@@ -80,7 +80,6 @@ class Room:
             else:
                 other_part = ""
 
-            #Do the command - You should make helper functions for each of these in your room as well.
             if command_base in ["move", "go"]:
                 next = self.move(other_part, player)
                 if(next != None):
@@ -100,6 +99,8 @@ class Room:
 
             elif command_base == "stats":
                 self.show_stats(player)
+            elif command_base == "exits":
+                print(self.exits)
 
             elif command_base == "quit":
                 if(self.quit_game(player) == "quit"):
@@ -110,7 +111,7 @@ class Room:
                 self.show_help()
             
             elif command_base == "hint":
-                self.show_hint()
+                self.show_hint(player)
             else:
                 self.unknown_command()
 
@@ -128,8 +129,8 @@ class Room:
             time.sleep(1)
             print("...")
             time.sleep(1)
-            print("HURRY! PRESS <ENTER> WITHIN 2 SECONDS TO BREAK YOUR FALL!")
-            i, _, _ = select.select([sys.stdin], [], [], 2)
+            print("HURRY! PRESS <ENTER> WITHIN 4 SECONDS TO BREAK YOUR FALL!")
+            i, _, _ = select.select([sys.stdin], [], [], 4)
             if i:
                 sys.stdin.readline()  # player reacted in time
                 print("You catch the vine just in time!")
@@ -157,18 +158,34 @@ class Room:
     def look(self, target, player):
         if(target == None or target == "" ):
             self.describe_room()
+            print("\nYou notice:")
+            print("- A curtain hiding something that might be going DOWN")
+            print("- A small crack in the wall to the WEST. I think a cockroach lives there.")
+            print("- A doorway leading SOUTH")
             return
         if target in ["cockroach", "cucaracha"]:
             print("Where's pest control when you need it? It's ruining my aesthetic. I need something sharp to take care of it.")
             return
-        # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
+        if target in ["down", "vine", "curtain"]:
+            print("A thick vine hides behind a curtain, leading down into shadows.")
+            return
+        elif target in ["west", "crack", "wall"]:
+            print("A narrow crack runs down the western wall. Too small for a person... but maybe not for a mouse?")
+            if "slayed_cucaracha" not in player.condition:
+                print("A large cockroach guards the crack.")
+            return
+        elif target in ["south", "doorway"]:
+            print("A simple doorway leads south to another chamber.")
+            return
         item = self.get_item_from_inventory(target,player)
         if item == None:
             item = self.get_item_from_object_list(target)
             if item == None:
                 print("There is nothing like " + target + " to look at.")
                 return
-
+        if item == self.mirror:
+            item.use()
+            return
         if target == item.name.lower().strip():
             print(item.description) 
             if(item.state != None): 
@@ -215,10 +232,21 @@ class Room:
             return "quit"
 
     def show_help(self):
-        print("Available commands: move, go, look, drop, inventory, stats, quit, help")
+        print("Available commands: move, go, look, use, drop, inventory, stats, exits, quit, help, hint")
 
-    def show_hint(self):
-        print("This is the starting room. You probably ought to get the lamp and go down the well.") #CHANGE THIS
+    def show_hint(self, player):
+        print(
+            """Try looking at the mirror more closely...
+            There's a vine hidden behind a curtain that leads down.
+            That crack in the wall looks too small... unless you were smaller?
+            Take a LOOK at these exits: down, west, south.
+            """)
+        if "slayed_cucaracha" not in player.condition:
+            print("A cockroach blocks the western passage. You'll need something sharp.")
+        elif "mouse" not in player.condition:
+            print("The western crack is too small. Perhaps the mirror holds secrets about transformation?")
+        else:
+            print("You seem ready to explore. Try the available exits: west, down, south")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")
