@@ -265,19 +265,12 @@ class Room:
         
         # Check if player has Mjolnir
         if not player.has_item("mjolnir"):
-            print("You attack Barry with your bare hands!")
-            print("Barry laughs maniacally and stings you with his massive stinger.")
-            print("If only you had Mjolnir to defend yourself...")
-            print("The venom courses through your veins...")
-            print("You collapse to the ground as darkness takes you.")
+            self.print_barry_things(True)
             player.health = 0  # Kill the player
             return
         
         # Player has Mjolnir - kill Barry
-        print("You raise Mjolnir high above your head!")
-        print("Lightning crackles around the mighty hammer as you bring it down upon Barry.")
-        print("With a thunderous crash, Barry the Bee is struck down!")
-        print("Barry falls to the ground, defeated. The room is now safe.")
+        self.print_barry_things(False)
         barry.state = "dead"
         # Update room description
         self.description = (
@@ -306,4 +299,18 @@ class Room:
             if item.name.lower() == item_name.lower():
                 return item
         return None
+
+    def print_barry_things(self, killed_barry):
+        if killed_barry:
+            print("You raise Mjolnir high above your head!")
+            print("Lightning crackles around the mighty hammer as you bring it down upon Barry.")
+            print("With a thunderous crash, Barry the Bee is struck down!")
+            print("Barry falls to the ground, defeated. The room is now safe.")
+            print("The exits to the EAST and SOUTH are no longer gaurder by Barry the Bee.")
+        else:
+            print("You attack Barry with your bare hands!")
+            print("Barry laughs maniacally and stings you with his massive stinger.")
+            print("If only you had Mjolnir to defend yourself...")
+            print("The venom courses through your veins...")
+            print("You collapse to the ground as darkness takes you.")
     
