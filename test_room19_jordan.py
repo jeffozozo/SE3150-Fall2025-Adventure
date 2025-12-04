@@ -17,7 +17,9 @@ class TestRoomInitialization:
     
     def test_room_has_exits(self):
         room = Room()
-        assert "south" in room.exits
+        assert "west" in room.exits
+        assert "north" in room.exits
+        assert "east" in room.exits
     
     def test_room_starts_with_mjolnir(self):
         Room.objects = []
@@ -60,14 +62,14 @@ class TestRoomMethods:
         assert "Curtis Sliwa" in captured.out
         assert "Mjolnir" in captured.out
     
-    def test_move_south_returns_south(self, capsys):
+    def test_move_west_returns_west(self, capsys):
         room = Room()
-        result = room.move("south")
-        assert result == "south"
+        result = room.move("west")
+        assert result == "west"
     
     def test_move_invalid_direction_returns_none(self, capsys):
         room = Room()
-        result = room.move("north")
+        result = room.move("south")
         assert result is None
     
     def test_show_help(self, capsys):
@@ -258,7 +260,7 @@ class TestQuizMechanics:
     def test_quiz_all_correct_not_worthy(self, capsys):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = False
+        # player.condition does not contain "worthy"
         
         with patch('builtins.input', side_effect=['B', 'C', 'B']):
             room.run_worthiness_quiz(player)
@@ -270,7 +272,7 @@ class TestQuizMechanics:
     def test_quiz_two_correct_worthy(self, capsys):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = True
+        player.condition.append("worthy")
         
         with patch('builtins.input', side_effect=['B', 'C', 'A']):
             room.run_worthiness_quiz(player)
@@ -281,7 +283,7 @@ class TestQuizMechanics:
     def test_quiz_two_correct_not_worthy_fails(self, capsys):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = False
+        # player.condition does not contain "worthy"
         
         with patch('builtins.input', side_effect=['B', 'C', 'A']):
             room.run_worthiness_quiz(player)
@@ -293,7 +295,7 @@ class TestQuizMechanics:
     def test_quiz_one_correct_not_worthy_fails(self, capsys):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = False
+        # player.condition does not contain "worthy"
         
         with patch('builtins.input', side_effect=['A', 'A', 'B']):
             room.run_worthiness_quiz(player)
@@ -304,7 +306,7 @@ class TestQuizMechanics:
     def test_quiz_one_correct_worthy_fails(self, capsys):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = True
+        player.condition.append("worthy")
         
         with patch('builtins.input', side_effect=['A', 'A', 'B']):
             room.run_worthiness_quiz(player)
@@ -314,7 +316,7 @@ class TestQuizMechanics:
     def test_quiz_zero_correct_fails(self, capsys):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = False
+        # player.condition does not contain "worthy"
         
         with patch('builtins.input', side_effect=['A', 'A', 'A']):
             room.run_worthiness_quiz(player)
@@ -335,7 +337,7 @@ class TestScoring:
     def test_score_increases_on_quiz_completion(self):
         room = Room()
         player = Player("Test", 100, "healthy", 0)
-        player.worthy = False
+        # player.condition does not contain "worthy"
         initial_score = player.score
         
         with patch('builtins.input', side_effect=['B', 'C', 'B']):
