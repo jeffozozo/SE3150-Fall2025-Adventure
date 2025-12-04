@@ -79,13 +79,13 @@ class Room:
 
     def move(self, direction):
         if direction in ["east", "e"]:
-            print("You head through the door to the east.")
+            print("You take the east exit out of the casino.")
             return "east"
-        elif direction in ["north", "n","passage"]:
-            print("You head through the door to the east.")
+        elif direction in ["north", "n"]:
+            print("A janitor closet lays to the north, you pass through the door.")
             return "north"
-        elif direction in ["west", "w","passage"]:
-            print("You head through the door to the east.")
+        elif direction in ["west", "w"]:
+            print("You head west into a doorway that says 'Double Dungeon'")
             return "west"
         else:
             print("You can't go that way.")
@@ -217,6 +217,16 @@ class Room:
             print("Not an available game, try 'BloodJack' or 'ScoreSlots'")
             return
 
+
+'''
+WARNING - The code below was 'borrowed' 🤡 from an open source project with cli games,
+then heavily vibe coded to match how i imagined it. The code can be confusing at times and
+reviewing it would be tedious.
+
+Enter at your own risk,
+Good luck!
+'''
+
 RED = '\033[91m'
 GREEN = '\033[92m'
 YELLOW = '\033[93m'
@@ -238,7 +248,7 @@ def BloodJack(player):
     print(f"{CYAN}Commands: wager, deal, exit{RESET}")
     print(f"{WHITE}Use 'wager' to set your bet (minimum 5), or 'deal' to play with minimum bet.{RESET}")
 
-    current_wager = 5  # Default minimum wager
+    current_wager = 5
     player_hand = []
     dealer_hand = []
     in_game = False
@@ -255,7 +265,6 @@ def BloodJack(player):
             else:
                 value += card
 
-        # Adjust for aces
         while value > 21 and aces > 0:
             value -= 10
             aces -= 1
@@ -267,14 +276,12 @@ def BloodJack(player):
         return random.choice(cards)
 
     def card_to_string(card):
-        """Convert card value to display string"""
         if card == 10:
             return "10"
         else:
             return str(card).rjust(2)
 
     def display_card(card, hidden=False):
-        """Display a single card in ASCII art"""
         if hidden:
             return [
                 f"{MAGENTA}┌─────┐{RESET}",
@@ -285,7 +292,6 @@ def BloodJack(player):
             ]
 
         card_str = card_to_string(card)
-        # Aces and face cards in yellow, numbers in white
         color = YELLOW if card in ['A', 'J', 'Q', 'K'] else WHITE
         return [
             f"{color}┌─────┐{RESET}",
@@ -300,12 +306,10 @@ def BloodJack(player):
         value_color = GREEN if player_value == 21 else RED if player_value > 21 else CYAN
         print(f"\n{BLUE}Your hand {value_color}(Value: {player_value}){RESET}:")
 
-        # Display player cards side by side
         card_displays = [display_card(card) for card in player_hand]
         for line_idx in range(5):
             print("  " + " ".join(card[line_idx] for card in card_displays))
 
-        # Display dealer cards
         if show_dealer_full:
             dealer_value = calculate_hand_value(dealer_hand)
             value_color = GREEN if dealer_value == 21 else RED if dealer_value > 21 else CYAN
@@ -336,7 +340,6 @@ def BloodJack(player):
             wager_input = input(f"{YELLOW}How much health do you want to wager? (or 'all' to bet everything, press Enter for minimum bet of 5): {RESET}").strip().lower()
 
             if wager_input == "":
-                # Default to minimum bet of 5
                 current_wager = 5
                 if current_wager > player.health:
                     print(f"{RED}You don't have enough health for the minimum bet! (Current health: {player.health}){RESET}")
@@ -367,7 +370,6 @@ def BloodJack(player):
                 print(f"{RED}You don't have enough health for this wager! (Current: {player.health}, Wager: {current_wager}){RESET}")
                 continue
 
-            # Start the game
             clear_screen()
             print(f"{RED}{BOLD}\n=== BLOOD JACK ==={RESET}")
             print(f"{YELLOW}Wager: {current_wager} health{RESET}")
@@ -379,7 +381,6 @@ def BloodJack(player):
 
             display_hands(False)
 
-            # Check for immediate blackjack
             if calculate_hand_value(player_hand) == 21:
                 print(f"{GREEN}{BOLD}BLACKJACK! You win!{RESET}")
                 winnings = current_wager * 2
@@ -405,7 +406,7 @@ def BloodJack(player):
                 current_wager = 5
             elif player_value == 21:
                 print(f"{GREEN}You have 21! Standing automatically.{RESET}")
-                command = "stand"  # Trigger stand logic
+                command = "stand"
 
         if command == "stand" and in_game:
             clear_screen()
@@ -413,7 +414,6 @@ def BloodJack(player):
             print(f"{YELLOW}Wager: {current_wager} health{RESET}")
             print(f"{GREEN}Current health: {player.health}{RESET}")
 
-            # Dealer's turn
             print(f"\n{BLUE}Dealer reveals their hand...{RESET}")
             display_hands(True)
 
@@ -476,7 +476,7 @@ def ScoreSlots(player):
 
     current_wager = 1
     ready_to_spin = False
-    is_spinning = False  # Lock to prevent multiple spins at once
+    is_spinning = False
 
     def colorize_symbol(symbol):
         if symbol == 'X':
@@ -502,12 +502,10 @@ def ScoreSlots(player):
         print(f"{CYAN}└─────┴─────┴─────┴─────┴─────┘{RESET}")
 
     def spin_reels():
-        # O=small hit (45%), W=big hit (25%), 7=jackpot (10%), L=lose (20%)
-        # Removed X to make winning more common
         weighted_symbols = ['O'] * 4 + ['W'] * 3 + ['7'] * 2 + ['L'] * 1
 
         reels = []
-        for col in range(5):  # Changed to 5 columns
+        for col in range(5):
             reel = [random.choice(weighted_symbols) for _ in range(3)]
             reels.append(reel)
         return reels
@@ -518,7 +516,6 @@ def ScoreSlots(player):
 
         weighted_symbols = ['O'] * 9 + ['W'] * 5 + ['7'] * 2 + ['L'] * 4
 
-        # Fast spinning phase - 8 frames at 0.08s each
         for i in range(8):
             clear_screen()
             temp_reels = []
@@ -531,7 +528,6 @@ def ScoreSlots(player):
             display_slot_machine(temp_reels)
             time.sleep(0.08)
 
-        # Slow down phase - 3 frames at 0.15s each
         for i in range(3):
             clear_screen()
             temp_reels = []
@@ -544,7 +540,6 @@ def ScoreSlots(player):
             display_slot_machine(temp_reels)
             time.sleep(0.15)
 
-        # Final result
         clear_screen()
         print(f"{MAGENTA}{BOLD}\n=== SCORE SLOTS ==={RESET}")
         print(f"\n{BOLD}Final Result:{RESET}")
@@ -573,7 +568,6 @@ def ScoreSlots(player):
             symbols_line = f"{CYAN}│{RESET}"
             for col in range(5):
                 sym = colorize_symbol(reels[col][row])
-                # Highlight if this position is in the winning line
                 if (col, row) in positions:
                     symbols_line += f"  {color}{BOLD}[{reels[col][row]}]{RESET}  {CYAN}│{RESET}"
                 else:
@@ -585,7 +579,6 @@ def ScoreSlots(player):
 
     def _display_line(reels, payout_type, amount_str):
         """Helper function to display a single line"""
-        # Determine the line pattern based on payout type
         if 'Row 1' in payout_type:
             line = f"{CYAN}|{RESET}  " + "--".join([colorize_symbol(reels[col][0]) for col in range(5)]) + f"  {CYAN}|{RESET}"
             print(f"{line}  Row 1: {amount_str}")
@@ -616,26 +609,21 @@ def ScoreSlots(player):
             print(f"{colorize_symbol(symbol)} {colorize_symbol(symbol)} {colorize_symbol(symbol)} {colorize_symbol(symbol)} {colorize_symbol(symbol)}  (ALL 15!)  {amount_str}")
 
     def display_text_based_lines(reels, payouts):
-        """Display text-based line indicators for winning and losing combinations"""
         if not payouts:
             return
 
-        # Separate winning and losing payouts
         winning_payouts = [(payout_type, amount) for payout_type, amount in payouts if amount > 0]
         losing_payouts = [(payout_type, amount) for payout_type, amount in payouts if amount < 0]
 
-        # Display winning lines
         if winning_payouts:
             print(f"\n{GREEN}{BOLD}Winning Lines:{RESET}")
             for payout_type, amount in winning_payouts:
                 amount_str = f"{GREEN}+{amount} points{RESET}"
                 _display_line(reels, payout_type, amount_str)
 
-        # Display losing lines (L penalties)
         if losing_payouts:
             print(f"\n{RED}{BOLD}L's in the chat:{RESET}")
             for payout_type, amount in losing_payouts:
-                # Special formatting for L penalties
                 if payout_type == 'L':
                     print(f"{RED}L = {amount} points{RESET}")
                 elif payout_type == 'Double L':
@@ -647,7 +635,6 @@ def ScoreSlots(player):
                 elif payout_type == 'BIG L':
                     print(f"{RED}BIG L = {amount} points (LOSE EVERYTHING!){RESET}")
                 else:
-                    # For any other losing payouts (shouldn't happen but just in case)
                     amount_str = f"{RED}{amount} points{RESET}"
                     _display_line(reels, payout_type, amount_str)
 
@@ -655,7 +642,6 @@ def ScoreSlots(player):
         payouts = []
         winning_lines = []
 
-        # Check for MEGA JACKPOT - all 15 symbols the same (only for winning symbols)
         all_symbols = [reels[col][row] for col in range(5) for row in range(3)]
         if len(set(all_symbols)) == 1:
             symbol = all_symbols[0]
@@ -669,15 +655,10 @@ def ScoreSlots(player):
             elif symbol == 'O':
                 payouts.append(('MEGA JACKPOT - ALL Os!!!', wager * 500))
                 winning_lines.append((positions, symbol))
-            # For all Ls, we already handled it above
-            return payouts, winning_lines  # Mega jackpot overrides all other payouts
+            return payouts, winning_line
 
-        # Check 3 horizontal rows
         for row in range(3):
             symbols = [reels[col][row] for col in range(5)]
-
-            # Check for L penalties (consecutive Ls anywhere in the row)
-            # Scan the entire row for L patterns
             max_consecutive_ls = 0
             current_consecutive = 0
 
@@ -688,7 +669,6 @@ def ScoreSlots(player):
                 else:
                     current_consecutive = 0
 
-            # Apply penalty based on max consecutive Ls found
             if max_consecutive_ls >= 5:
                 payouts.append(('BIG L', -(current_score + wager)))
             elif max_consecutive_ls == 4:
@@ -700,12 +680,10 @@ def ScoreSlots(player):
             elif max_consecutive_ls == 1:
                 payouts.append(('L', -wager))
 
-            # Skip winning checks if this row starts with L
             symbol = symbols[0]
             if symbol == 'L':
                 continue
 
-            # Check for 5 of a kind (winning symbols, left-aligned)
             if symbols[0] == symbols[1] == symbols[2] == symbols[3] == symbols[4]:
                 positions = [(col, row) for col in range(5)]
                 if symbol == '7':
@@ -717,7 +695,6 @@ def ScoreSlots(player):
                 elif symbol == 'O':
                     payouts.append((f'Row {row+1}: Five Os', wager * 25))
                     winning_lines.append((positions, symbol))
-            # Check for 4 of a kind
             elif symbols[0] == symbols[1] == symbols[2] == symbols[3]:
                 positions = [(col, row) for col in range(4)]
                 if symbol == '7':
@@ -729,7 +706,6 @@ def ScoreSlots(player):
                 elif symbol == 'O':
                     payouts.append((f'Row {row+1}: Four Os', wager * 12))
                     winning_lines.append((positions, symbol))
-            # Check for 3 of a kind
             elif symbols[0] == symbols[1] == symbols[2]:
                 positions = [(col, row) for col in range(3)]
                 if symbol == '7':
@@ -742,7 +718,6 @@ def ScoreSlots(player):
                     payouts.append((f'Row {row+1}: Three Os', wager * 5))
                     winning_lines.append((positions, symbol))
 
-        # Left to right diagonal (top-left to bottom-right)
         diag_lr = [reels[0][0], reels[1][0], reels[2][1], reels[3][2], reels[4][2]]
         if diag_lr[0] == diag_lr[1] == diag_lr[2] == diag_lr[3] == diag_lr[4] and diag_lr[0] != 'L':
             if diag_lr[0] == '7':
@@ -752,7 +727,6 @@ def ScoreSlots(player):
             elif diag_lr[0] == 'O':
                 payouts.append(('Diagonal \\: Five Os', wager * 25))
 
-        # Right to left diagonal (top-right to bottom-left)
         diag_rl = [reels[4][0], reels[3][0], reels[2][1], reels[1][2], reels[0][2]]
         if diag_rl[0] == diag_rl[1] == diag_rl[2] == diag_rl[3] == diag_rl[4] and diag_rl[0] != 'L':
             if diag_rl[0] == '7':
@@ -762,7 +736,6 @@ def ScoreSlots(player):
             elif diag_rl[0] == 'O':
                 payouts.append(('Diagonal /: Five Os', wager * 25))
 
-        # V shape (starts top-left, goes to bottom-middle, ends top-right)
         v_shape = [reels[0][0], reels[1][1], reels[2][2], reels[3][1], reels[4][0]]
         if v_shape[0] == v_shape[1] == v_shape[2] == v_shape[3] == v_shape[4] and v_shape[0] != 'L':
             if v_shape[0] == '7':
@@ -772,7 +745,6 @@ def ScoreSlots(player):
             elif v_shape[0] == 'O':
                 payouts.append(('V Pattern: Five Os', wager * 25))
 
-        # Inverted V shape (starts bottom-left, goes to top-middle, ends bottom-right)
         inv_v_shape = [reels[0][2], reels[1][1], reels[2][0], reels[3][1], reels[4][2]]
         if inv_v_shape[0] == inv_v_shape[1] == inv_v_shape[2] == inv_v_shape[3] == inv_v_shape[4] and inv_v_shape[0] != 'L':
             if inv_v_shape[0] == '7':
@@ -797,7 +769,6 @@ def ScoreSlots(player):
             print(f"{MAGENTA}{BOLD}\n=== SCORE SLOTS ==={RESET}")
             print(f"{GREEN}Your current score: {player.score}{RESET}")
 
-            # Check if player has any score to wager
             if player.score <= 0:
                 print(f"{RED}You have no score to wager! You need at least 1 point to play.{RESET}")
                 continue
@@ -805,7 +776,6 @@ def ScoreSlots(player):
             wager_input = input(f"{YELLOW}How much do you want to wager? (1, 2, 3, 5, 10, or 'all', press Enter for minimum bet of 1): {RESET}").strip().lower()
 
             if wager_input == "":
-                # Default to minimum bet of 1
                 current_wager = 1
                 if current_wager > player.score:
                     print(f"{RED}You don't have enough score for the minimum bet! (Current score: {player.score}){RESET}")
@@ -834,24 +804,20 @@ def ScoreSlots(player):
             print(f"{CYAN}Wager set to {current_wager} points. Use 'spin' to play!{RESET}")
 
         elif command == "spin" or command == "":
-            # Check if already spinning
             if is_spinning:
-                continue  # Ignore input while spinning
+                continue
 
-            # Check if player has any score to play
             if player.score <= 0:
                 print(f"{RED}You have no score to wager! You need at least 1 point to play.{RESET}")
                 continue
 
             if not ready_to_spin and current_wager == 0:
-                # Auto-wager minimum bet
                 if player.score < 1:
                     print(f"{RED}You don't have enough score for the minimum bet!{RESET}")
                     continue
                 current_wager = 1
                 ready_to_spin = True
 
-            # Set spinning lock
             is_spinning = True
 
             clear_screen()
@@ -864,28 +830,22 @@ def ScoreSlots(player):
 
             print(f"{YELLOW}Wager: {current_wager} points{RESET}")
 
-            # Deduct the wager
             was_all_in = (current_wager == player.score)
             player.score -= current_wager
 
             print(f"{GREEN}Current score: {player.score}{RESET}")
 
-            # Spin the reels with animation
             reels = spin_reels()
             animate_spin(reels)
 
-            # Calculate payouts (pass score after wager deduction)
             payouts, winning_lines = calculate_payout(reels, current_wager, player.score)
 
-            # Display text-based winning lines immediately after the slot machine
             display_text_based_lines(reels, payouts)
 
-            # Calculate and apply total winnings
             if payouts:
                 total_winnings = sum(p[1] for p in payouts)
                 player.score += total_winnings
 
-                # Prevent score from going negative
                 if player.score < 0:
                     player.score = 0
 
@@ -899,7 +859,6 @@ def ScoreSlots(player):
                     else:
                         print(f"{YELLOW}Current score: {player.score}{RESET}")
                 else:
-                    # Mixed results that cancel out to 0
                     print(f"\n{YELLOW}Results cancel out to 0{RESET}")
                     print(f"{YELLOW}Current score: {player.score}{RESET}")
             else:
@@ -908,9 +867,8 @@ def ScoreSlots(player):
                     print(f"{RED}{BOLD}You bet it all and lost everything!{RESET}")
                 print(f"{YELLOW}Current score: {player.score}{RESET}")
 
-            ready_to_spin = True  # Keep ready to spin for Enter key feature
-            is_spinning = False  # Unlock spinning
-            # Don't reset current_wager so Enter can reuse it
+            ready_to_spin = True
+            is_spinning = False
 
         elif command not in ["wager", "spin", "exit"]:
             print(f"{RED}Invalid command. Use: wager, spin, exit{RESET}")
