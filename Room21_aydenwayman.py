@@ -10,6 +10,7 @@ class Room:
     ENTRY_CENTER = (5, 5)
     EXIT_NORTH = (0, 5)
     EXIT_WEST = (5, 0)
+    EXIT_SOUTH = (10, 5)
     MILLENIUM_EYE_POS = (8, 8)
     SHUFFLER_POSITIONS = [(2, 2), (9, 3)]
     DUMMY_POSITIONS = [(3, 7), (6, 4), (1, 9), (10, 10), (7, 2), (4,5), (2,8), (8,2), (9,9), (0,10)]
@@ -29,14 +30,17 @@ class Room:
 
     def __init__(self):
         self.room_num = 21
-        self.description = ("You step into a vast, pitch-dark chamber."
-        "As the door slams shut, you feel a chill run down your spine."
-        "The room is a perfect 11x11 square, and you sense mysterious objects scattered about."
-        "The only visible exits are a door to the west,"
-        "engraved with 'The Eye of Ra',"
-        "and a passage to the north,"
-        "engraved with 'Error'.")
-        self.exits = ["west","north"]
+        self.description = (
+            "You step into a vast, pitch-dark chamber."
+            "As the door slams shut, you feel a chill run down your spine."
+            "The room is a perfect 11x11 square, and you sense mysterious objects scattered about."
+            "The only visible exits are a door to the west,"
+            "engraved with 'The Eye of Ra',"
+            "a passage to the north,"
+            "engraved with 'Error',"
+            "and a hushed portal to the south, its lintel bearing a faded Eye symbol."
+        )
+        self.exits = ["west", "north", "south"]
 
 
     # this gets called when the player enters the room.
@@ -155,6 +159,8 @@ class Room:
             print("The north door is here, engraved with 'Error'.")
         if self.player_pos == list(self.EXIT_WEST):
             print("The west door is here, engraved with 'The Eye of Ra'.")
+        if self.player_pos == list(self.EXIT_SOUTH):
+            print("The south door is here, bearing a faded Eye symbol.")
 
     # Helper functions
     def describe_room(self):
@@ -179,6 +185,8 @@ class Room:
             print("The north door is here, engraved with 'Error'.")
         if self.player_pos == list(self.EXIT_WEST):
             print("The west door is here, engraved with 'The Eye of Ra'.")
+        if self.player_pos == list(self.EXIT_SOUTH):
+            print("The south door is here, bearing a faded Eye symbol.")
 
     def move(self, direction, player):
         dir_map = {"north": (-1, 0), "n": (-1, 0), "south": (1, 0), "s": (1, 0), "east": (0, 1), "e": (0, 1), "west": (0, -1), "w": (0, -1)}
@@ -193,6 +201,14 @@ class Room:
                 return "west"
             else:
                 print("The west door is locked. Only the Millenium Eye can open it.")
+                return None
+        # South exit behaves like the west door: requires the Millenium Eye
+        if self.player_pos == list(self.EXIT_SOUTH) and direction in ["south", "s"]:
+            if player.has_item("Millenium Eye"):
+                print("The Millenium Eye pulses painfully in your skull. The south door creaks open!")
+                return "south"
+            else:
+                print("The south door is locked. Only the Millenium Eye can open it.")
                 return None
         if self.player_pos == list(self.EXIT_NORTH) and direction in ["north", "n"]:
             code = input("The north door is locked. Enter password: ").strip()
@@ -228,12 +244,16 @@ class Room:
             self.describe_room()
             return
         pos = tuple(self.player_pos)
-        if target == "door" or target == "north door":
+        if target == "north door":
             print("The north door is engraved with 'Error'. It seems to require a password.")
             return
         if target == "west door":
             print("The west door is engraved with 'The Eye of Ra'. It seems to require a special object.")
             return
+        if target == "south door":
+            print("The south door bears a faded Eye symbol. It seems to require a special object.")
+            return
+        
         # inspect objects at current position
         objs_here = [o for o in self.objects if getattr(o, 'pos', None) == pos]
         if objs_here:
@@ -337,7 +357,7 @@ class Room:
         print("Try to find a way out. The doors have mysterious engravings.")
 
     def show_hint(self):
-        print("Hint: The Millenium Eye is the key to the west door. The north door needs a password. Some objects may not be what they seem.")
+        print("Hint: The Millenium Eye is the key to the west door and the south door. The north door needs a password. Some objects may not be what they seem.")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")
