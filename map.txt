@@ -1,3 +1,5 @@
+#Correct map.txt (original)
+
 Room:0 - Jeff
  down,1
 
