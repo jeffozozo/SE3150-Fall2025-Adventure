@@ -79,7 +79,7 @@ class Room:
                     print("Curtis won't let you do anything. You can only 'move west' to leave.")
                 elif command_base == "quit":
                     if self.quit_game(player) == "quit":
-                        return "quit"
+                        sys.exit(0)
                 else:
                     print("Curtis blocks you. \"I said GET OUTTA HERE! Try 'move west' to leave!\"")
                 continue
@@ -112,7 +112,7 @@ class Room:
 
             elif command_base == "quit":
                 if self.quit_game(player) == "quit":
-                    return "quit"
+                    sys.exit(0)
 
             elif command_base in ["help", "?"]:
                 self.show_help()
