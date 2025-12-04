@@ -198,7 +198,7 @@ class Room:
         item = self.get_item_from_inventory(item_name,player)
         if(item == None):
             item = self.get_item_from_object_list(item_name)
-        if item in ["Dagger", "Needle", "Mjolnir"]:
+        if item != None and item_name in ["Dagger", "Needle", "Mjolnir"]:
             print("Goodjob Amig@! The mousedoor is no longer gaurded by la cucaracha! La cucaracha! \nYa no puede caminar. porque no tiene...porque no tiene... patas para caminar. ")
             player.condition.append("slayed_cucaracha")
         #this room only allows you to use the objects in the list or inventory. That is not a global constraint however and you can add whatever use functions you like.
