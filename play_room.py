@@ -22,7 +22,7 @@ player = Player(
     name="test",
     health=100,
     condition="healthy",
-    current_room=0
+    current_room=room_num
 )   
 
 direction = rooms[room_num].enter(player)
