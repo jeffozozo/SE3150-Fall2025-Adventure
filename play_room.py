@@ -25,9 +25,21 @@ player = Player(
     current_room=room_num
 )   
 
-direction = rooms[room_num].enter(player)
+count = 0
+for r in rooms:
+    if r == None:
+        print("Room: " + str(count) + " is None.")
+        continue
 
-print("Room "+str(room_num)+" exited with direction: " + direction + "\n")
+    print("room: " + str(r.room_num) + "\n")
+    print(r.description)
+    print("\n\n------")
+    count += 1
+
+
+#direction = rooms[room_num].enter(player)
+
+#print("Room "+str(room_num)+" exited with direction: " + direction + "\n")
 
 
 

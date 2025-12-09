@@ -5,28 +5,40 @@ from object import Object
 import importlib
 
 # Load rooms from files and populate the rooms list
+
 def load_rooms():
     rooms = []
 
-    #get a list of files in the current directory
-    all_files = os.listdir()
+    # Use the directory where this file lives (safer than os.listdir() with no args)
+    base_dir = os.path.dirname(__file__)
+    all_files = os.listdir(base_dir)
+
     room_files = []
     for file in all_files:
         if file.startswith("Room") and file.endswith(".py"):
             room_files.append(file)
 
-    #create room objects for each of the room files.
-    # Sort the room files based on the room number
-    # Extract the number from the filename and use it as the sort key
-    room_files.sort(key=lambda x: int(x[4:].split("_")[0]))
+    # Sort by the room number after "Room" and before "_"
+    room_files.sort(key=lambda x: int(x[4:].split("_", 1)[0]))
 
-    # Now load the rooms in the correct order
-    rooms = []
     for room_file in room_files:
-        room_name = room_file[:-3]  # Strip '.py' from the filename
+        # Example: "Room13_gisela.py" -> "13" -> 13
+        room_num = int(room_file[4:].split("_", 1)[0])
+
+        room_name = room_file[:-3]  # strip ".py"
+
+        # Import from the same package / directory
         room_module = importlib.import_module(room_name)
+
         room_instance = room_module.Room()
-        rooms.append(room_instance)
+
+        # Grow the list so index room_num exists
+        while len(rooms) <= room_num:
+            rooms.append(None)
+
+        rooms[room_num] = room_instance
+
+        print(f"loaded {room_file} as room number {room_num}")
 
     return rooms
 
