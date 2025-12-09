@@ -89,6 +89,7 @@ class Room:
         if(target == None or target == "" ):
             self.describe_room()
             return
+
         
         # Check if the object is in the room or in the player's inventory and print it description and status. You can use this code exactly.
         item = self.get_item_from_inventory(target,player)
@@ -171,7 +172,7 @@ class Room:
         print("Available commands: move, go, look, get, take, drop, inventory, stats, quit, help")
 
     def show_hint(self):
-        print("This is the starting room. You probably ought to get the lamp and go down the well.")
+        print("This is a placeholder. Nothing to see here.")
 
     def unknown_command(self):
         print("You can't do that here. Try something else or type 'help' for options or 'hint' for a clue.")

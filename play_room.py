@@ -15,21 +15,15 @@ except (IndexError, ValueError):
 # load the room
 rooms = load_rooms()
 
-
-
 # setup the player
 player = Player(
     name="test",
     health=100,
     condition="healthy",
-    current_room=0
+    current_room= room_num
 )   
 
 direction = rooms[room_num].enter(player)
 
 print("Room "+str(room_num)+" exited with direction: " + direction + "\n")
-
-
-
-
 
