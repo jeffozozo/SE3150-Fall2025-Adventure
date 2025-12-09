@@ -28,6 +28,8 @@ def load_rooms():
         room_instance = room_module.Room()
         rooms.append(room_instance)
 
+        print("loaded " + room_file + " as room number " + str(len(rooms)) + "\n")
+
     return rooms
 
 # Load the game map from a file
